@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  
+  <title>Android模仿实现Instagram照片选择页的效果 - Q.R&#39;s Blog</title>
+  <meta charset="UTF-8">
+  <meta name="description" content="A blog for sharing">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+  
+  
+
+  <link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/ritcheeqing/resources@latest/images/favicon.ico" type="image/x-icon" />
+  <meta name="description" content="上次试着搞了搞点击回到顶部的效果，不过最后也没搞出个所以然来，这次是照片选择和上传页的效果，找到了一个别人的项目所以分享一下。 先放Ins上的效果（强行调分辨率弄的图有点糊）：布局：直观看过去就是外层的Toolbar和ViewPager我们先不管，再里面LinearLayout里装着ImageView + RecyclerView 总结下来，简单来说实际上就是如果手只在RecyclerView的范">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android模仿实现Instagram照片选择页的效果">
+<meta property="og:url" content="https://ritcheeqing.github.io/2019/05/09/ins-liked-effects/index.html">
+<meta property="og:site_name" content="Q.R&#39;s Blog">
+<meta property="og:description" content="上次试着搞了搞点击回到顶部的效果，不过最后也没搞出个所以然来，这次是照片选择和上传页的效果，找到了一个别人的项目所以分享一下。 先放Ins上的效果（强行调分辨率弄的图有点糊）：布局：直观看过去就是外层的Toolbar和ViewPager我们先不管，再里面LinearLayout里装着ImageView + RecyclerView 总结下来，简单来说实际上就是如果手只在RecyclerView的范">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/15568908-8ca4ace15b3af3d4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/15568908-ddfa9551a87c2e60.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="article:published_time" content="2019-05-09T10:07:58.000Z">
+<meta property="article:modified_time" content="2020-03-15T04:44:27.419Z">
+<meta property="article:author" content="RitcheeQinG">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/15568908-8ca4ace15b3af3d4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/gh/nexmoe/nexmoe.github.io@latest/css/style.css,npm/highlight.js@9.15.8/styles/atom-one-dark.css,gh/nexmoe/nexmoe.github.io@latest/lib/mdui_043tiny/css/mdui.css,gh/nexmoe/nexmoe.github.io@latest/lib/iconfont/iconfont.css" crossorigin>
+  
+  <!--<link rel="stylesheet" href="/css/style.css?v=1584249755443">-->
+
+  
+<meta name="generator" content="Hexo 4.1.1"></head>
+
+<body class="mdui-drawer-body-left">
+  
+  <div id="nexmoe-background">
+    <div class="nexmoe-bg" style="background-image: url(https://cdn.jsdelivr.net/gh/ritcheeqing/resources@latest/images/cover_yousa_qixi.PNG)"></div>
+    <div class="mdui-appbar mdui-shadow-0">
+      <div class="mdui-toolbar">
+        <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+        <div class="mdui-toolbar-spacer"></div>
+        <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+        <a href="/" title="RitcheeQinG" class="mdui-btn mdui-btn-icon"><img src="https://cdn.jsdelivr.net/gh/ritcheeqing/resources@latest/images/avatar.png" alt="RitcheeQinG"></a>
+       </div>
+    </div>
+  </div>
+  <div id="nexmoe-header">
+      <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="RitcheeQinG">
+            <img src="https://cdn.jsdelivr.net/gh/ritcheeqing/resources@latest/images/avatar.png" alt="RitcheeQinG" alt="RitcheeQinG">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>Articles</span>12</div>
+        <div><span>Tags</span>4</div>
+        <div><span>Categories</span>5</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/archives" title="文章归档">
+            <i class="mdui-list-item-icon nexmoefont icon-container"></i>
+            <div class="mdui-list-item-content">
+                文章归档
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/friends.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+  
+  <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+        <form id="search_form" action_e="https://www.baidu.com/s?wd=ritcheeqing" onsubmit="return search();">
+            <label><input id="search_value" name="q" type="search" placeholder="Search"></label>
+        </form>
+    </div>
+</div>
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">Social</h3>
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://space.bilibili.com/1668675" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/RitcheeQinG" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(25, 23, 23);background-color: rgba(25, 23, 23, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+  
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">Categories</h3>
+    <div class="nexmoe-widget">
+
+      <ul class="category-list">
+
+        
+
+
+        
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Tech/Android/">Android</a>
+          <span class="category-list-count">5</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Blog/">Blog</a>
+          <span class="category-list-count">4</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Issues/">Issues</a>
+          <span class="category-list-count">1</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Tech/NFV/">NFV</a>
+          <span class="category-list-count">2</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Tech/">Tech</a>
+          <span class="category-list-count">7</span>
+        </li>
+
+        
+      </ul>
+
+    </div>
+  </div>
+
+
+  
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">Tag Cloud</h3>
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/DPDK/" style="font-size: 13.33px;">DPDK</a> <a href="/tags/Mysis/" style="font-size: 16.67px;">Mysis</a> <a href="/tags/Theme/" style="font-size: 10px;">Theme</a>
+    </div>
+    
+  </div>
+  <style>
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+1) {
+    background-color: rgba(255,78,106,0.15);
+    color: rgba(255,78,106,0.8);
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+2) {
+    background-color: rgba(255,170,115,0.15);
+    color: #ffaa73;
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+3) {
+    background-color: rgba(254,212,102,0.15);
+    color: #fed466;
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+4) {
+    background-color: rgba(60,220,130,0.15);
+    color: #3cdc82;
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+5) {
+    background-color: rgba(100,220,240,0.15);
+    color: #64dcf0;
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+6) {
+    background-color: rgba(100,185,255,0.15);
+    color: #64b9ff;
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+7) {
+    background-color: rgba(180,180,255,0.15);
+    color: #b4b4ff;
+    }
+
+    
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta {
+    margin: 25px 0px;
+    font-size: 0;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a {
+    border-radius: 20px;
+    padding: 10px 18px;
+    color: #fff;
+    font-size: 14px;
+    display: inline-block;
+    margin-bottom: 5px;
+    margin-right: 10px;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a .nexmoefont {
+    font-size: 14px;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:before,
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta i:before {
+    margin-right: 5px;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+1) {
+    background-color: rgba(255,78,106,0.15);
+    color: #ff4e6a;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+2) {
+    background-color: rgba(255,170,115,0.15);
+    color: #ffaa73;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+3) {
+    background-color: rgba(254,212,102,0.15);
+    color: #fed466;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+4) {
+    background-color: rgba(60,220,130,0.15);
+    color: #3cdc82;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+5) {
+    background-color: rgba(100,220,240,0.15);
+    color: #64dcf0;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+6) {
+    background-color: rgba(100,185,255,0.15);
+    color: #64b9ff;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+7) {
+    background-color: rgba(180,180,255,0.15);
+    color: #b4b4ff;
+    }
+</style>
+
+  
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">Archive</h3>
+    <div class="nexmoe-widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2020 RitcheeQinG
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://nexmoe.com/hexo-theme-nexmoe.html" target="_blank">Nexmoe</a>
+    </div>
+</div><!-- .nexmoe-drawer -->
+  </div>
+  <div id="nexmoe-content">
+    <div class="nexmoe-primary">
+        <div class="nexmoe-post">
+  
+      <div class="nexmoe-post-cover" style="padding-bottom: 56.25%;"> 
+          <img data-src="https://cdn.jsdelivr.net/gh/ritcheeqing/resources@latest/images/cover_yousa_qixi.PNG" data-sizes="auto" alt="Android模仿实现Instagram照片选择页的效果" class="lazyload">
+          <h1>Android模仿实现Instagram照片选择页的效果</h1>
+      </div>
+  
+  
+  <div class="nexmoe-post-meta" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2019年05月09日</a>
+    <a><i class="nexmoefont icon-areachart"></i>1.8k 字</a>
+    <a><i class="nexmoefont icon-time-circle-fill"></i>大概 8 分钟</a>
+</div>
+
+  <div class="nexmoe-post-right">
+    
+  </div>
+
+  <article>
+    <p>上次试着搞了搞点击回到顶部的效果，不过最后也没搞出个所以然来，这次是照片选择和上传页的效果，找到了一个别人的项目所以分享一下。</p>
+<p>先放Ins上的效果（强行调分辨率弄的图有点糊）：<br><img data-sizes="auto" data-src="https://upload-images.jianshu.io/upload_images/15568908-8ca4ace15b3af3d4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="展开" class="lazyload"><br>布局：直观看过去就是外层的Toolbar和ViewPager我们先不管，再里面LinearLayout里装着ImageView + RecyclerView</p>
+<p><img data-sizes="auto" data-src="https://upload-images.jianshu.io/upload_images/15568908-ddfa9551a87c2e60.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="收起" class="lazyload"><br>总结下来，简单来说实际上就是如果手只在RecyclerView的范围内划动就正常滑照片列表，划到上面的照片的话就把照片推上去<br>其他一些别的效果回头再说。</p>
+<blockquote>
+<p>关于这个效果我找到了一个实现用的Demo，感谢大佬作者<br><a href="https://github.com/Skykai521/InstagramPhotoPicker" target="_blank" rel="noopener">Github: InstagramPhotoPicker by Skykai521</a></p>
+</blockquote>
+<p>原版代码各位自己点进去看就是了，我改了改来实现点别的，以及debug<br>我就不全贴了，贴一部分核心逻辑和能改的东西<br><strong>关于里面的逻辑全写在注释里了，应该已经写得很详细了</strong><br>使用方法和注意事项在最下面<br>如果哪写错了欢迎和我说……</p>
+<pre><code>/**
+ * Created by sky on 17/3/1.
+ * https://github.com/Skykai521/InstagramPhotoPicker
+ */
+public class CoordinatorRecyclerView extends RecyclerView {
+
+    ...
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent e) {
+        // 我自己加的，原因是onTouchEvent的down这个event
+        // 在RecyclerView的item是clickable的时候很容易失效，
+        // 导致downPositionY不更新，会有bug，折叠上去之后拽不下来
+        // 所以把down的处理也放在这里
+        if (e.getAction() == MotionEvent.ACTION_DOWN) {
+            downPositionY = e.getRawY();
+        }
+        return super.onInterceptTouchEvent(e);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        if (null == coordinatorListener) {
+            return super.onTouchEvent(ev);
+        }
+        final int action = ev.getAction();
+        final int y = (int) ev.getRawY();
+        final int x = (int) ev.getRawX();
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                downPositionY = ev.getRawY();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                int deltaY = (int) (downPositionY - y);
+                boolean deal;
+                if (isScrollTop(ev)) {
+                    // 折叠着且recycler拉到头，大图被拽下来
+                    deal = coordinatorListener.onCoordinateScroll(x, y, 0, deltaY + Math.abs(dragDistanceY), true);
+                } else {
+                    // 大图展开
+                    deal = coordinatorListener.onCoordinateScroll(x, y, 0, deltaY, isScrollTop(ev));
+                }
+                if (deal) {
+                    // 这里手动调了下stopScroll，是因为每次大图收起来之后
+                    // item的点击事件会有一次失效，推测是这次点击被用来停止滚动了，所以手动给他停下
+                    stopScroll();
+                    return true;
+                }
+                break;
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_UP:
+                // 这里即松手判断大图位置是不是变了，变了就自动收起/折叠
+                scrollTop = false;
+                if (coordinatorListener.isBeingDragged()) {
+                    coordinatorListener.onSwitch();
+                    return true;
+                }
+                break;
+        }
+        return super.onTouchEvent(ev);
+    }
+
+    private boolean isScrollTop(MotionEvent ev) {
+        // 在折叠状态下，RecyclerView依然是可以上下滚的，
+        // 只有RecyclerView下拉到头马上要把上面折叠的大图拽下来了时是isScrollTop
+        LayoutManager layoutManager = getLayoutManager();
+        if (layoutManager instanceof GridLayoutManager) {
+            GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
+            if (gridLayoutManager.findFirstVisibleItemPosition() == 0) {
+                ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) gridLayoutManager.findViewByPosition(0).getLayoutParams();
+                // 这里代表RecyclerView下拉时被拉到头了
+                // 一般情况下下面两个条件必定有一个为true，所以这里用&amp;&amp;
+                // 这里的逻辑我也修改过，大致意思是第一个图片toolbar底部的高度等于decoration或者margin
+                // 根据情况可以自己添加，因为这里出错会导致折叠的大图拉不下来
+                if ((null != params &amp;&amp; gridLayoutManager.findViewByPosition(0).getTop() != params.topMargin) &amp;&amp;
+                        gridLayoutManager.findViewByPosition(0).getTop() != gridLayoutManager.getTopDecorationHeight(gridLayoutManager.findViewByPosition(0))) {
+                    return false;
+                }
+                if (!scrollTop) {
+                    // 这里的dragDistanceY即大图折叠时RecyclerView被拽着滚动的距离
+                    dragDistanceY = (int) (downPositionY - ev.getRawY());
+                    scrollTop = true;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void setCoordinatorListener(CoordinatorListener listener) {
+        this.coordinatorListener = listener;
+    }
+
+    @Override
+    public void onScrolled(int dx, int dy) {
+        // 原本接口类里没定义switchToTop和isWholeState这俩方法，
+        // 所以想用listener调用得自己加上，作用是滚过一段距离之后自动展开
+        super.onScrolled(dx, dy);
+        totalY += dy;
+        if ((totalY &gt; onSwitchDistance || totalY &lt; -onSwitchDistance) &amp;&amp; coordinatorListener.isWholeState()) {
+            coordinatorListener.switchToTop();
+            totalY = 0;
+        }
+    }
+
+    public void onItemClick(int position) {
+        // 自己写的，搞这个是为了点击item时大图能展开，且item移动到大图正下面
+        if (null == coordinatorListener) {
+            return;
+        }
+        GridLayoutManager manager = (GridLayoutManager) getLayoutManager();
+        int firstPosition = manager.findFirstVisibleItemPosition();
+        int availablePosition = position - firstPosition;
+        // 如果position大于屏幕中显示的child数量就会为空，所以这里要减去
+        View child = getLayoutManager().getChildAt(availablePosition);
+        if (null != child) {
+            scrollBy(0, child.getTop());
+        }
+        if (!coordinatorListener.isWholeState()) {
+            coordinatorListener.switchToWhole();
+        }
+        totalY = 0;
+    }
+
+}
+</code></pre><pre><code>/**
+ * Created by sky on 17/3/1.
+ * https://github.com/Skykai521/InstagramPhotoPicker
+ */
+public class CoordinatorLinearLayout extends LinearLayout implements CoordinatorListener {
+    public static int DEFAULT_DURATION = 500;
+    private int state = WHOLE_STATE;
+    private int topBarHeight; // toolbar
+    private int topViewHeight; // toolbar + 正方形大照片的底部高度
+    private int minScrollToTop; // toolbar
+    private int minScrollToWhole; // 大照片高度 - toolbar，和上面的minScrollToTop一起，用于判断松手后展开还是收起
+    private int maxScrollDistance; // 大照片高度，最大滑动距离
+    private float lastPositionY; // 手指按下的位置
+    private boolean beingDragged;
+    private Context context;
+    private OverScroller scroller; // 用于松手后展开/收起
+
+    ...
+
+    public CoordinatorLinearLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        this.context = context;
+        init();
+    }
+
+    private void init() {
+        scroller = new OverScroller(context);
+    }
+
+    public void setTopViewParam(int topViewHeight, int topBarHeight) {
+        // 初始化这些值，这些定义错了这个类是没法实现效果的
+        this.topViewHeight = topViewHeight;
+        this.topBarHeight = topBarHeight;
+        this.maxScrollDistance = this.topViewHeight - this.topBarHeight;
+        this.minScrollToTop = this.topBarHeight;
+        this.minScrollToWhole = maxScrollDistance - this.topBarHeight;
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        final int action = ev.getAction();
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                int y = (int) ev.getY();
+                int rawY = (int) ev.getRawY();
+                lastPositionY = y;
+                // 收起且点在最顶上，在这里处理，这里用getY和getRawY是会有区别的，看情况用吧
+                if (state == COLLAPSE_STATE &amp;&amp; rawY &lt; topBarHeight) {
+                    return true;
+                }
+                break;
+        }
+        return super.onInterceptTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        // 应该是只有碰到最顶上了才会走到这里
+        final int action = ev.getAction();
+        final int y = (int) ev.getRawY();
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                lastPositionY = y;
+                break;
+            case MotionEvent.ACTION_MOVE:
+                int deltaY = (int) (lastPositionY - y);
+                if (state == COLLAPSE_STATE &amp;&amp; deltaY &lt; 0) {
+                    beingDragged = true;
+                    setScrollY(maxScrollDistance + deltaY);
+                }
+                break;
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_UP:
+                if (beingDragged) {
+                    onSwitch();
+                    return true;
+                }
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onCoordinateScroll(int x, int y, int deltaX, int deltaY, boolean isScrollToTop) {
+        // deltaY 是按下位置 - 手指拖动后的位置
+        if (y &lt; topViewHeight &amp;&amp; state == WHOLE_STATE &amp;&amp; getScrollY() &lt; getScrollRange()) {
+            // 展开，手指在滑动区间（toolbar + 正方形）且在范围内（正方形高度）
+            beingDragged = true;
+            // 手指当前位置和开始滑动的位置的距离
+            setScrollY(topViewHeight - y);
+            return true;
+        } else if (isScrollToTop &amp;&amp; state == COLLAPSE_STATE &amp;&amp; deltaY &lt; 0) {
+            // 在顶上，收起且向下滑
+            beingDragged = true;
+            setScrollY(maxScrollDistance + deltaY);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void onSwitch() {
+        if (state == WHOLE_STATE) {
+            if (getScrollY() &gt;= minScrollToTop) {
+                switchToTop();
+            } else {
+                switchToWhole();
+            }
+        } else if (state == COLLAPSE_STATE) {
+            if (getScrollY() &lt;= minScrollToWhole) {
+                switchToWhole();
+            } else {
+                switchToTop();
+            }
+        }
+    }
+
+    @Override
+    public boolean isBeingDragged() {
+        return beingDragged;
+    }
+
+    public void switchToWhole() {
+        if (!scroller.isFinished()) {
+            scroller.abortAnimation();
+        }
+        // 滚到原来的位置
+        scroller.startScroll(0, getScrollY(), 0, -getScrollY(), DEFAULT_DURATION);
+        postInvalidate();
+        state = WHOLE_STATE;
+        beingDragged = false;
+    }
+
+    public void switchToTop() {
+        if (!scroller.isFinished()) {
+            scroller.abortAnimation();
+        }
+        scroller.startScroll(0, getScrollY(), 0, getScrollRange() - getScrollY(), DEFAULT_DURATION);
+        postInvalidate();
+        state = COLLAPSE_STATE;
+        beingDragged = false;
+    }
+
+    @Override
+    public void computeScroll() {
+        // 重写这个来让LinearLayout可以滚动
+        if (scroller.computeScrollOffset()) {
+            setScrollY(scroller.getCurrY());
+            postInvalidate();
+        }
+    }
+
+    private int getScrollRange() {
+        return maxScrollDistance;
+    }
+
+    @Override
+    public boolean isWholeState() {
+        return state == WHOLE_STATE;
+    }
+}
+</code></pre><p><strong>使用方法：</strong><br>分别find出对象，然后将CoordinatorLinearLayout调用<code>setCoordinatorListener</code>给CoordinatorRecyclerView就好了<br>然后调用CoordinatorLinearLayout的<code>setTopViewParam</code>设置高度<br>至于RecyclerView的设置manager和adapter啥的就不说了</p>
+<p><strong>注意事项：</strong><br>设置高度不要出错，一个toolbar+大照片高度，一个toolbar高度<br><strong>记得也给RecyclerView重设下高度，不然它划上去也只有被啃剩下那点高度</strong>，（一些别的情况下高度设置可能会失效，这个我就不管了……Google吧）<br><strong>设置RV的高度时注意设置成它最大能展示在屏幕里的高度，设多了最后滚到最下面会显示不全</strong></p>
+<p><strong>可能的问题</strong></p>
+<ol>
+<li>折叠上去以后第一次点击失效：可能是RecyclerView的ScrollState没更新导致的</li>
+<li>折叠上去之后拽不下来：downPositionY位置没更新导致的</li>
+<li>别的我没发现的问题<br>前两个在注释里有提到原因和解决办法</li>
+</ol>
+
+  </article>
+
+  <div class="nexmoe-post-meta">
+    
+        <a class="nexmoefont icon-appstore-fill -link" href="/categories/Tech/">Tech</a><a class="nexmoefont icon-appstore-fill -link" href="/categories/Tech/Android/">Android</a>
+    
+    
+        <a class="nexmoefont icon-tag-fill -link" href="/tags/Android/" rel="tag">Android</a>
+    
+</div>
+
+  <div class="nexmoe-post-footer">
+    
+      
+  <div class="nexmoe-post-copyright">
+    <strong>Author：</strong>RitcheeQinG<br>
+    <strong>Link：</strong><a href="https://ritcheeqing.github.io/2019/05/09/ins-liked-effects/" title="https:&#x2F;&#x2F;ritcheeqing.github.io&#x2F;2019&#x2F;05&#x2F;09&#x2F;ins-liked-effects&#x2F;" target="_blank" rel="noopener">https:&#x2F;&#x2F;ritcheeqing.github.io&#x2F;2019&#x2F;05&#x2F;09&#x2F;ins-liked-effects&#x2F;</a><br>
+    
+      <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+    
+  </div>
+
+
+    
+    <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.0/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.0/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'nexmoe.github.io',
+        owner: 'nexmoe',
+        admin: 'nexmoe'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+  </div>
+</div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,gh/highlightjs/cdn-release@9.15.8/build/highlight.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js,gh/nexmoe/nexmoe.github.io@latest/js/app.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<!--<script src="/js/app.js?v=1584249755445"></script>-->
+
+
+    <script src="https://cdn.jsdelivr.net/gh/xtaodada/xtaodada.github.io@0.0.2/copy.js"></script>
+
+
+ 
+<script> 
+!function(e,t,a){function n(){c(".heart{width: 10px;height: 10px;position: fixed;background: #f00;transform: rotate(45deg);-webkit-transform: rotate(45deg);-moz-transform: rotate(45deg);}.heart:after,.heart:before{content: '';width: inherit;height: inherit;background: inherit;border-radius: 50%;-webkit-border-radius: 50%;-moz-border-radius: 50%;position: fixed;}.heart:after{top: -5px;}.heart:before{left: -5px;}"),o(),r()}function r(){for(var e=0;e<d.length;e++)d[e].alpha<=0?(t.body.removeChild(d[e].el),d.splice(e,1)):(d[e].y--,d[e].scale+=.004,d[e].alpha-=.013,d[e].el.style.cssText="left:"+d[e].x+"px;top:"+d[e].y+"px;opacity:"+d[e].alpha+";transform:scale("+d[e].scale+","+d[e].scale+") rotate(45deg);background:"+d[e].color+";z-index:99999");requestAnimationFrame(r)}function o(){var t="function"==typeof e.onclick&&e.onclick;e.onclick=function(e){t&&t(),i(e)}}function i(e){var a=t.createElement("div");a.className="heart",d.push({el:a,x:e.clientX-5,y:e.clientY-5,scale:1,alpha:1,color:s()}),t.body.appendChild(a)}function c(e){var a=t.createElement("style");a.type="text/css";try{a.appendChild(t.createTextNode(e))}catch(t){a.styleSheet.cssText=e}t.getElementsByTagName("head")[0].appendChild(a)}function s(){return"rgb("+~~(255*Math.random())+","+~~(255*Math.random())+","+~~(255*Math.random())+")"}var d=[];e.requestAnimationFrame=function(){return e.requestAnimationFrame||e.webkitRequestAnimationFrame||e.mozRequestAnimationFrame||e.oRequestAnimationFrame||e.msRequestAnimationFrame||function(e){setTimeout(e,1e3/60)}}(),n()}(window,document);
+</script>
+
+  
+
+
+
+
+
+</body>
+
+</html>

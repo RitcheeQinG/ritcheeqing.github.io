@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  
+  <title>GoogleMap Android SDK介绍（1），从入门到出门 - Q.R&#39;s Blog</title>
+  <meta charset="UTF-8">
+  <meta name="description" content="A blog for sharing">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+  
+  
+
+  <link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/ritcheeqing/resources@latest/images/favicon.ico" type="image/x-icon" />
+  <meta name="description" content="官方API Demo 官方文档 注册API Key  本篇囊括了对GoogleMap Android SDK的安装使用和对一部分API和其使用方式的介绍，只写了自己知道的，反正关于GoogleMap，看这一篇肯定不够 此外，这里使用的版本是16.1.0，目前的最新版本是17.0.0，可能会有变化，我可能看情况更新 注意：没有API Key的话地图是无法正常显示的，此外，没有GMS地图也只会显示让">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GoogleMap Android SDK介绍（1），从入门到出门">
+<meta property="og:url" content="https://ritcheeqing.github.io/2019/05/09/Google%20Map%20API/index.html">
+<meta property="og:site_name" content="Q.R&#39;s Blog">
+<meta property="og:description" content="官方API Demo 官方文档 注册API Key  本篇囊括了对GoogleMap Android SDK的安装使用和对一部分API和其使用方式的介绍，只写了自己知道的，反正关于GoogleMap，看这一篇肯定不够 此外，这里使用的版本是16.1.0，目前的最新版本是17.0.0，可能会有变化，我可能看情况更新 注意：没有API Key的话地图是无法正常显示的，此外，没有GMS地图也只会显示让">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-05-09T10:07:58.000Z">
+<meta property="article:modified_time" content="2020-03-15T04:44:25.121Z">
+<meta property="article:author" content="RitcheeQinG">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/gh/nexmoe/nexmoe.github.io@latest/css/style.css,npm/highlight.js@9.15.8/styles/atom-one-dark.css,gh/nexmoe/nexmoe.github.io@latest/lib/mdui_043tiny/css/mdui.css,gh/nexmoe/nexmoe.github.io@latest/lib/iconfont/iconfont.css" crossorigin>
+  
+  <!--<link rel="stylesheet" href="/css/style.css?v=1584249755440">-->
+
+  
+<meta name="generator" content="Hexo 4.1.1"></head>
+
+<body class="mdui-drawer-body-left">
+  
+  <div id="nexmoe-background">
+    <div class="nexmoe-bg" style="background-image: url(https://cdn.jsdelivr.net/gh/ritcheeqing/resources@latest/images/cover_yousa_qixi.PNG)"></div>
+    <div class="mdui-appbar mdui-shadow-0">
+      <div class="mdui-toolbar">
+        <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+        <div class="mdui-toolbar-spacer"></div>
+        <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+        <a href="/" title="RitcheeQinG" class="mdui-btn mdui-btn-icon"><img src="https://cdn.jsdelivr.net/gh/ritcheeqing/resources@latest/images/avatar.png" alt="RitcheeQinG"></a>
+       </div>
+    </div>
+  </div>
+  <div id="nexmoe-header">
+      <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="RitcheeQinG">
+            <img src="https://cdn.jsdelivr.net/gh/ritcheeqing/resources@latest/images/avatar.png" alt="RitcheeQinG" alt="RitcheeQinG">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>Articles</span>12</div>
+        <div><span>Tags</span>4</div>
+        <div><span>Categories</span>5</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/archives" title="文章归档">
+            <i class="mdui-list-item-icon nexmoefont icon-container"></i>
+            <div class="mdui-list-item-content">
+                文章归档
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/friends.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+  
+  <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+        <form id="search_form" action_e="https://www.baidu.com/s?wd=ritcheeqing" onsubmit="return search();">
+            <label><input id="search_value" name="q" type="search" placeholder="Search"></label>
+        </form>
+    </div>
+</div>
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">Social</h3>
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://space.bilibili.com/1668675" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/RitcheeQinG" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(25, 23, 23);background-color: rgba(25, 23, 23, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+  
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">Categories</h3>
+    <div class="nexmoe-widget">
+
+      <ul class="category-list">
+
+        
+
+
+        
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Tech/Android/">Android</a>
+          <span class="category-list-count">5</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Blog/">Blog</a>
+          <span class="category-list-count">4</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Issues/">Issues</a>
+          <span class="category-list-count">1</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Tech/NFV/">NFV</a>
+          <span class="category-list-count">2</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Tech/">Tech</a>
+          <span class="category-list-count">7</span>
+        </li>
+
+        
+      </ul>
+
+    </div>
+  </div>
+
+
+  
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">Tag Cloud</h3>
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/DPDK/" style="font-size: 13.33px;">DPDK</a> <a href="/tags/Mysis/" style="font-size: 16.67px;">Mysis</a> <a href="/tags/Theme/" style="font-size: 10px;">Theme</a>
+    </div>
+    
+  </div>
+  <style>
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+1) {
+    background-color: rgba(255,78,106,0.15);
+    color: rgba(255,78,106,0.8);
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+2) {
+    background-color: rgba(255,170,115,0.15);
+    color: #ffaa73;
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+3) {
+    background-color: rgba(254,212,102,0.15);
+    color: #fed466;
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+4) {
+    background-color: rgba(60,220,130,0.15);
+    color: #3cdc82;
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+5) {
+    background-color: rgba(100,220,240,0.15);
+    color: #64dcf0;
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+6) {
+    background-color: rgba(100,185,255,0.15);
+    color: #64b9ff;
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+7) {
+    background-color: rgba(180,180,255,0.15);
+    color: #b4b4ff;
+    }
+
+    
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta {
+    margin: 25px 0px;
+    font-size: 0;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a {
+    border-radius: 20px;
+    padding: 10px 18px;
+    color: #fff;
+    font-size: 14px;
+    display: inline-block;
+    margin-bottom: 5px;
+    margin-right: 10px;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a .nexmoefont {
+    font-size: 14px;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:before,
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta i:before {
+    margin-right: 5px;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+1) {
+    background-color: rgba(255,78,106,0.15);
+    color: #ff4e6a;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+2) {
+    background-color: rgba(255,170,115,0.15);
+    color: #ffaa73;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+3) {
+    background-color: rgba(254,212,102,0.15);
+    color: #fed466;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+4) {
+    background-color: rgba(60,220,130,0.15);
+    color: #3cdc82;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+5) {
+    background-color: rgba(100,220,240,0.15);
+    color: #64dcf0;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+6) {
+    background-color: rgba(100,185,255,0.15);
+    color: #64b9ff;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+7) {
+    background-color: rgba(180,180,255,0.15);
+    color: #b4b4ff;
+    }
+</style>
+
+  
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">Archive</h3>
+    <div class="nexmoe-widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2020 RitcheeQinG
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://nexmoe.com/hexo-theme-nexmoe.html" target="_blank">Nexmoe</a>
+    </div>
+</div><!-- .nexmoe-drawer -->
+  </div>
+  <div id="nexmoe-content">
+    <div class="nexmoe-primary">
+        <div class="nexmoe-post">
+  
+      <div class="nexmoe-post-cover" style="padding-bottom: 56.25%;"> 
+          <img data-src="https://cdn.jsdelivr.net/gh/ritcheeqing/resources@latest/images/cover_yousa_qixi.PNG" data-sizes="auto" alt="GoogleMap Android SDK介绍（1），从入门到出门" class="lazyload">
+          <h1>GoogleMap Android SDK介绍（1），从入门到出门</h1>
+      </div>
+  
+  
+  <div class="nexmoe-post-meta" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2019年05月09日</a>
+    <a><i class="nexmoefont icon-areachart"></i>2.2k 字</a>
+    <a><i class="nexmoefont icon-time-circle-fill"></i>大概 10 分钟</a>
+</div>
+
+  <div class="nexmoe-post-right">
+    
+  </div>
+
+  <article>
+    <blockquote>
+<p><a href="https://github.com/googlemaps/android-samples/tree/v3-beta" target="_blank" rel="noopener">官方API Demo</a></p>
+<p><a href="https://developers.google.cn/maps/documentation/android-sdk/intro" target="_blank" rel="noopener">官方文档</a></p>
+<p><a href="https://www.jianshu.com/p/5daa8dc9bc18" target="_blank" rel="noopener">注册API Key</a></p>
+</blockquote>
+<p>本篇囊括了对GoogleMap Android SDK的安装使用和对一部分API和其使用方式的介绍，只写了自己知道的，反正关于GoogleMap，看这一篇肯定不够</p>
+<p>此外，这里使用的版本是16.1.0，目前的最新版本是17.0.0，可能会有变化，我可能看情况更新</p>
+<p><strong>注意：没有API Key的话地图是无法正常显示的，此外，没有GMS地图也只会显示让你更新GMS和一个update的跳转按钮。</strong></p>
+<p>此外，<del>鉴于本人莫得感情，更莫得钱</del>，所以本文只包括免费的部分</p>
+<p>我先贴一个介绍到的API列表（并不会全都详细介绍，以及有一些我自己还没用过的API我就不写了），如果有感兴趣的可以自行往下翻：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GoogleMap</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>animateCamera</td>
+<td>调整镜头位置，设置焦距等</td>
+</tr>
+<tr>
+<td>setIndoorEnabled</td>
+<td>是否支持屋内地图</td>
+</tr>
+<tr>
+<td>setBuildingsEnabled</td>
+<td>是否支持立体建筑图</td>
+</tr>
+<tr>
+<td>setTrafficEnabled</td>
+<td>是否支持交通图</td>
+</tr>
+<tr>
+<td>setMapToolbarEnabled</td>
+<td>是否显示右下角的两个Google的Toolbar</td>
+</tr>
+<tr>
+<td>moveCamera</td>
+<td>移动镜头到指定坐标</td>
+</tr>
+<tr>
+<td>setMaxZoomPreference</td>
+<td>设置最大焦距，设置之后再设置焦距时默认不会超出这个范围</td>
+</tr>
+<tr>
+<td>setMinZoomPreference</td>
+<td>设置最小焦距，设置之后再设置焦距时默认不会超出这个范围</td>
+</tr>
+<tr>
+<td>setRotateGesturesEnabled</td>
+<td>是否支持旋转手势</td>
+</tr>
+<tr>
+<td>setScrollGesturesEnabled</td>
+<td>是否支持滑动手势</td>
+</tr>
+<tr>
+<td>setZoomGesturesEnabled</td>
+<td>是否支持缩放手势，包括双击放大和双指放大缩小</td>
+</tr>
+<tr>
+<td>getProjection</td>
+<td>获取投影</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Marker</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>addMarker</td>
+<td>在地图上创建一个Marker，同时返回一个Marker对象</td>
+</tr>
+<tr>
+<td>position</td>
+<td>即放置的位置坐标</td>
+</tr>
+<tr>
+<td>anchor</td>
+<td>Marker显示的位置，默认是(0.5f, 1)，代表Marker图标的下方中间点显示在地图的指定坐标点</td>
+</tr>
+<tr>
+<td>zIndex</td>
+<td>多个Marker重叠时控制哪个显示在上面，值越大越会显示在上层</td>
+</tr>
+<tr>
+<td>icon</td>
+<td>自定义Marker的图标，参数需要是GoogleMap库里面的BitmapDiscriptor形式</td>
+</tr>
+<tr>
+<td>title</td>
+<td>Marker的标题</td>
+</tr>
+<tr>
+<td>snippet</td>
+<td>和title差不多，显示在其下面</td>
+</tr>
+<tr>
+<td>visible</td>
+<td>可见性</td>
+</tr>
+<tr>
+<td><strong>BitmapDiscriptorFactory</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>fromBitmap</td>
+<td>使用一个Bitmap对象来创建一个BitmapDiscriptor</td>
+</tr>
+<tr>
+<td>fromAsset</td>
+<td>从Asset文件中选文件来创建bitmap</td>
+</tr>
+<tr>
+<td>fromFile</td>
+<td>使用内部存储中的文件名</td>
+</tr>
+<tr>
+<td>fromPath</td>
+<td>使用绝对文件路径</td>
+</tr>
+<tr>
+<td>fromResource</td>
+<td>从res文件中创建bitmap</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>shapes和groundOverlay我感觉差不太多，放一起吧</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Descrpition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CircleOptions</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>center</td>
+<td>用坐标来设置中心点</td>
+</tr>
+<tr>
+<td>radius</td>
+<td>半径，单位为米</td>
+</tr>
+<tr>
+<td>Circle.setCenter</td>
+<td>用来动态调整中心点</td>
+</tr>
+<tr>
+<td>Circle.setRadius</td>
+<td>用来动态调整半径</td>
+</tr>
+<tr>
+<td>clickable</td>
+<td>是否可以点击，可以用map的setOncircleClickListener来监听点击事件</td>
+</tr>
+<tr>
+<td>Circle.setClickable</td>
+<td>用来动态设置是否可以点击</td>
+</tr>
+<tr>
+<td>strokeWidth</td>
+<td>描边半径，<strong>单位为像素(px)</strong></td>
+</tr>
+<tr>
+<td>fillColor</td>
+<td>填充颜色（填充是被单位为米的半径控制的范围）</td>
+</tr>
+<tr>
+<td>strokeColor</td>
+<td>描边颜色，关于颜色，使用资源文件里定义的颜色应该是无效的，自己写颜色的数值或者使用Color类中的那些。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>以上这些和UI有关的控件应该都可以通过setTag来绑定数据</strong></p>
+<p>此外，包括一些其他问题：</p>
+<ol>
+<li>一些其他的更的API</li>
+<li>如何计算ZoomLevel和屏幕像素的比例</li>
+<li>如何判断是否开启GMS，以及主动尝试更新GMS</li>
+<li>如何尝试做些简单的动画</li>
+<li>一些坑（动画，手势，MapView的Load，部分机型下Crash等）</li>
+</ol>
+<p>对于这部分内容还会再写一篇</p>
+<p>那么我们开始吧：</p>
+<h2 id="1-使用方式"><a href="#1-使用方式" class="headerlink" title="1. 使用方式"></a>1. 使用方式</h2><p>Google Map 安卓端免费使用的方式有两种：</p>
+<ol>
+<li>SupportMapFragment：占据全屏，创建后使用即可</li>
+</ol>
+<pre><code class="lang-java">public class GoogleMapActivity extends BaseToolbarActivity implements OnMapReadyCallback {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            try {
+                // map相关操作全都有可能抛Exception，以防万一最好都catch住
+                mapFragment.getMapAsync(this);
+                mapFragment.onResume();
+            } catch (RuntimeRemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        // 这里返回创建好的map
+    }
+
+}
+</code></pre>
+<ol>
+<li>MapView：使用更加灵活，但是需要主动维护生命周期</li>
+</ol>
+<pre><code class="lang-java">MapView mapView = findViewById(R.id.map);
+mapView.onCreate(null);
+mapView.getMapAsync(new OnMapReadyCallback() {
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        // 这里返回创建好的map
+    }
+});
+</code></pre>
+<p><strong>注意</strong>：如果不想维护MapView的生命周期，可以在布局文件中定义LiteMode, 也可以在代码中定义：</p>
+<p>布局文件中：</p>
+<pre><code class="lang-xml">&lt;fragment xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
+    xmlns:map=&quot;http://schemas.android.com/apk/res-auto&quot;
+    android:name=&quot;com.google.android.gms.maps.MapFragment&quot;
+    android:id=&quot;@+id/map&quot;
+    android:layout_width=&quot;match_parent&quot;
+    android:layout_height=&quot;match_parent&quot;
+    map:cameraZoom=&quot;13&quot;
+    map:mapType=&quot;normal&quot;
+    map:liteMode=&quot;true&quot;/&gt;
+&lt;!-- MapView同样是这个字段 --&gt;
+</code></pre>
+<p>代码中：</p>
+<pre><code class="lang-java">GoogleMapOptions options = new GoogleMapOptions().liteMode(true);
+</code></pre>
+<p>关于在<code>ListView</code>或者<code>RecyclerView</code>中使用MapView：</p>
+<blockquote>
+<p><a href="https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/main/java/com/example/mapdemo/LiteListDemoActivity.java" target="_blank" rel="noopener">官方Demo了解一下</a></p>
+<p>下面这部分代码我懒得自己写例子了，来自上面的官方Demo</p>
+</blockquote>
+<p>简单说一下就是：在类似onCreate的时机将MapView初始化：</p>
+<pre><code class="lang-java">// 可以看到，官方是在ViewHolder的构造函数里进行的初始化，即其创建的时候，创建完后加载一下地图内容
+            private ViewHolder(View itemView) {
+                super(itemView);
+                layout = itemView;
+                mapView = layout.findViewById(R.id.lite_listrow_map);
+                title = layout.findViewById(R.id.lite_listrow_text);
+                if (mapView != null) {
+                    // Initialise the MapView
+                    mapView.onCreate(null);
+                    // Set the map ready callback to receive the GoogleMap object
+                    mapView.getMapAsync(this);
+                }
+            }
+
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                MapsInitializer.initialize(getApplicationContext());
+                map = googleMap;
+                setMapLocation();
+            }
+</code></pre>
+<p>然后，不管是ListView还是RecyclerView，实现<code>RecyclerListener</code></p>
+<pre><code class="lang-java">    private RecyclerView.RecyclerListener mRecycleListener = new RecyclerView.RecyclerListener() {
+
+        @Override
+        public void onViewRecycled(RecyclerView.ViewHolder holder) {
+            MapAdapter.ViewHolder mapHolder = (MapAdapter.ViewHolder) holder;
+            if (mapHolder != null &amp;&amp; mapHolder.map != null) {
+                // Clear the map and free up resources by changing the map type to none.
+                // Also reset the map when it gets reattached to layout, so the previous map would
+                // not be displayed.
+                mapHolder.map.clear();
+                mapHolder.map.setMapType(GoogleMap.MAP_TYPE_NONE);
+            }
+        }
+    };
+</code></pre>
+<p>这样item被回收的时候会调用到这里，clear会清理掉marker之类的控件，type设置成none会释放资源。再在类似onBind这种重新加载的时机，调用如下方法重新设置图标和地图样式之类的。</p>
+<pre><code class="lang-java">            private void setMapLocation() {
+                if (map == null) return;
+
+                NamedLocation data = (NamedLocation) mapView.getTag();
+                if (data == null) return;
+
+                // Add a marker for this item and set the camera
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(data.location, 13f));
+                map.addMarker(new MarkerOptions().position(data.location));
+
+                // Set the map type back to normal.
+                map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+            }
+
+            private void bindView(int pos) {
+                NamedLocation item = namedLocations[pos];
+                // Store a reference of the ViewHolder object in the layout.
+                layout.setTag(this);
+                // Store a reference to the item in the mapView&#39;s tag. We use it to get the
+                // coordinate of a location, when setting the map location.
+                mapView.setTag(item);
+                setMapLocation();
+                title.setText(item.name);
+            }
+        }
+</code></pre>
+<h2 id="2-关于Marker"><a href="#2-关于Marker" class="headerlink" title="2. 关于Marker"></a>2. 关于Marker</h2><p>简单来说，这么用就行：</p>
+<pre><code class="lang-java">LatLng userPos = new LatLng(0, 0);
+userMarker = currentMap.addMarker(new MarkerOptions()
+                    .position(userPos)
+                    .anchor(0.5f, 0.5f)
+                    .zIndex(1)
+                    .icon(BitmapDescriptorFactory.fromResource(
+                          R.drawable.ic_google_map_blue_point)));
+</code></pre>
+<p><code>anchor(0.5f, 0.5f)</code>表示这个Marker图标的正中心会显示在position上面</p>
+<p><code>zIndex(1)</code>表示它会显示在zIndex为0的Marker上面</p>
+<p>此外，icon里面使用的资源需要是静态的，因为要转换成bitmap</p>
+<p>关于Marker里面的<code>InfoWindow</code>：</p>
+<p>InfoWindow是显示在Marker上方的，举例：</p>
+<p>自定义一个InfoWindow：</p>
+<pre><code class="lang-java">public class MyInfoAdapter implements GoogleMap.InfoWindowAdapter {
+
+        private View mWindow;
+
+        MyInfoAdapter() {
+            mWindow = getLayoutInflater().inflate(R.layout.layout_map_info_window,
+                    new RelativeLayout(getContext()), false);
+        }
+
+        @Override
+        public View getInfoWindow(Marker marker) {
+            return mWindow;
+        }
+
+        @Override
+        public View getInfoContents(Marker marker) {
+            return null;
+        }
+    }
+</code></pre>
+<p>添加到地图和显示：</p>
+<pre><code class="lang-java"> @Override
+public void onMapReady(GoogleMap googleMap) {
+    mMap = googleMap;
+    mMap.setInfoWindowAdapter(new MyInfoAdapter());
+    mMarker.showInfoWindow();
+    mMarker.hideInfoWindow();
+}
+</code></pre>
+<p>可见，添加到地图是Map里面的方法，而显示和隐藏是Marker里面的方法。</p>
+<p>在添加多个Marker的时候，最好注意控制InfoWindow显示在哪个Marker上面。</p>
+<p><strong>默认情况下，点击哪个Marker，InfoWindow就会显示在哪个Marker上面</strong></p>
+<p><strong>此外，InfoWindow显示的内容和Marker一样都是静态的，如果是个需要加载时间的图片，最好想办法过后再重新使用showInfoWindow显示一次，重新显示时会刷新。</strong></p>
+<h2 id="3-关于animateCamera"><a href="#3-关于animateCamera" class="headerlink" title="3. 关于animateCamera()"></a>3. 关于animateCamera()</h2><p>GoogleMap里面，想要移动镜头有几种方式:</p>
+<ol>
+<li><code>mMap.moveCamera()</code></li>
+<li><code>mMap.animateCamera()</code></li>
+</ol>
+<p>主要区别是在于是否有动画效果，move自然是立刻生效的</p>
+<blockquote>
+<p>这里懒得多写了，<a href="https://developers.google.cn/maps/documentation/android-sdk/views?hl=zh-cn#updating_the_camera_view" target="_blank" rel="noopener">直接拿官方的例子</a></p>
+</blockquote>
+<pre><code class="lang-java">private static final LatLng SYDNEY = new LatLng(-33.88,151.21);
+private static final LatLng MOUNTAIN_VIEW = new LatLng(37.4, -122.1);
+
+private GoogleMap map;
+... // Obtain the map from a MapFragment or MapView.
+
+// Move the camera instantly to Sydney with a zoom of 15.
+map.moveCamera(CameraUpdateFactory.newLatLngZoom(SYDNEY, 15));
+
+// Zoom in, animating the camera.
+map.animateCamera(CameraUpdateFactory.zoomIn());
+
+// Zoom out to zoom level 10, animating with a duration of 2 seconds.
+map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
+
+// Construct a CameraPosition focusing on Mountain View and animate the camera to that position.
+CameraPosition cameraPosition = new CameraPosition.Builder()
+    .target(MOUNTAIN_VIEW)      // Sets the center of the map to Mountain View
+    .zoom(17)                   // Sets the zoom
+    .bearing(90)                // Sets the orientation of the camera to east
+    .tilt(30)                   // Sets the tilt of the camera to 30 degrees
+    .build();                   // Creates a CameraPosition from the builder
+map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+</code></pre>
+<p>可见moveCamera和animateCamera的参数<code>CameraUpdate</code>基本上都是由<code>CameraUpdateFactory</code>这个工厂类来创建的，其中animate能够设置地址，设置持续时间，回调等。</p>
+<p>对镜头的控制包括位置和焦距，可以通过LatLng和ZoomLevel控制</p>
+<p>回调包括<code>onFinish()</code>和<code>onCancel()</code>，一个是动画正常结束，另一种是中断</p>
+<h2 id="4-关于onMapLoadedCallback"><a href="#4-关于onMapLoadedCallback" class="headerlink" title="4. 关于onMapLoadedCallback"></a>4. 关于onMapLoadedCallback</h2><pre><code class="lang-java"> currentMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+                @Override
+                public void onMapLoaded() {
+                    try {
+                        ... // do something
+                    } catch (RuntimeRemoteException e) {
+                        e.printStackTrace();
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+</code></pre>
+<p>这个<code>OnMapLoadedCallback()</code>会在地图<strong>完全加载完成</strong>时被调用</p>
+<h2 id="5-关于Exception"><a href="#5-关于Exception" class="headerlink" title="5. 关于Exception"></a>5. 关于Exception</h2><p>然后上面有一些关于Exception的处理，实际上，使用GoogleMap类的<strong>任何方法</strong>都有可能抛出<code>RuntimeRemoteException</code>，最好做一下处理</p>
+
+  </article>
+
+  <div class="nexmoe-post-meta">
+    
+        <a class="nexmoefont icon-appstore-fill -link" href="/categories/Tech/">Tech</a><a class="nexmoefont icon-appstore-fill -link" href="/categories/Tech/Android/">Android</a>
+    
+    
+        <a class="nexmoefont icon-tag-fill -link" href="/tags/Android/" rel="tag">Android</a>
+    
+</div>
+
+  <div class="nexmoe-post-footer">
+    
+      
+  <div class="nexmoe-post-copyright">
+    <strong>Author：</strong>RitcheeQinG<br>
+    <strong>Link：</strong><a href="https://ritcheeqing.github.io/2019/05/09/Google%20Map%20API/" title="https:&#x2F;&#x2F;ritcheeqing.github.io&#x2F;2019&#x2F;05&#x2F;09&#x2F;Google%20Map%20API&#x2F;" target="_blank" rel="noopener">https:&#x2F;&#x2F;ritcheeqing.github.io&#x2F;2019&#x2F;05&#x2F;09&#x2F;Google%20Map%20API&#x2F;</a><br>
+    
+      <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+    
+  </div>
+
+
+    
+    <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.0/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.0/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'nexmoe.github.io',
+        owner: 'nexmoe',
+        admin: 'nexmoe'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+  </div>
+</div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,gh/highlightjs/cdn-release@9.15.8/build/highlight.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js,gh/nexmoe/nexmoe.github.io@latest/js/app.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<!--<script src="/js/app.js?v=1584249755442"></script>-->
+
+
+    <script src="https://cdn.jsdelivr.net/gh/xtaodada/xtaodada.github.io@0.0.2/copy.js"></script>
+
+
+ 
+<script> 
+!function(e,t,a){function n(){c(".heart{width: 10px;height: 10px;position: fixed;background: #f00;transform: rotate(45deg);-webkit-transform: rotate(45deg);-moz-transform: rotate(45deg);}.heart:after,.heart:before{content: '';width: inherit;height: inherit;background: inherit;border-radius: 50%;-webkit-border-radius: 50%;-moz-border-radius: 50%;position: fixed;}.heart:after{top: -5px;}.heart:before{left: -5px;}"),o(),r()}function r(){for(var e=0;e<d.length;e++)d[e].alpha<=0?(t.body.removeChild(d[e].el),d.splice(e,1)):(d[e].y--,d[e].scale+=.004,d[e].alpha-=.013,d[e].el.style.cssText="left:"+d[e].x+"px;top:"+d[e].y+"px;opacity:"+d[e].alpha+";transform:scale("+d[e].scale+","+d[e].scale+") rotate(45deg);background:"+d[e].color+";z-index:99999");requestAnimationFrame(r)}function o(){var t="function"==typeof e.onclick&&e.onclick;e.onclick=function(e){t&&t(),i(e)}}function i(e){var a=t.createElement("div");a.className="heart",d.push({el:a,x:e.clientX-5,y:e.clientY-5,scale:1,alpha:1,color:s()}),t.body.appendChild(a)}function c(e){var a=t.createElement("style");a.type="text/css";try{a.appendChild(t.createTextNode(e))}catch(t){a.styleSheet.cssText=e}t.getElementsByTagName("head")[0].appendChild(a)}function s(){return"rgb("+~~(255*Math.random())+","+~~(255*Math.random())+","+~~(255*Math.random())+")"}var d=[];e.requestAnimationFrame=function(){return e.requestAnimationFrame||e.webkitRequestAnimationFrame||e.mozRequestAnimationFrame||e.oRequestAnimationFrame||e.msRequestAnimationFrame||function(e){setTimeout(e,1e3/60)}}(),n()}(window,document);
+</script>
+
+  
+
+
+
+
+
+</body>
+
+</html>

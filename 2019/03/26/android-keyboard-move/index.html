@@ -4,7 +4,7 @@
 
 <head>
   
-  <title>Tags：Mysis - Q.R&#39;s Blog</title>
+  <title>Android监听键盘弹出收起并移动界面 - Q.R&#39;s Blog</title>
   <meta charset="UTF-8">
   <meta name="description" content="A blog for sharing">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
@@ -12,18 +12,21 @@
   
 
   <link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/ritcheeqing/resources@latest/images/favicon.ico" type="image/x-icon" />
-  <meta name="description" content="A blog for sharing">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Q.R&#39;s Blog">
-<meta property="og:url" content="https://ritcheeqing.github.io/tags/Mysis/index.html">
+  <meta name="description" content="Android 监听键盘弹出收起 - 掘金代码中所用的监听键盘部分来自这里  目的：不使用AdjustPan达到AdjustPan的功能，用这个的话设置AdjustResize就好了，这种方法也可以自己修改键盘抬升的距离，相比系统默认顶到EditText底下会好一点吧。用法：new, add方法：计算EditText底部和当前更改后的Windows底部的差值，抬升这个差值就好了，应该不用考虑状态">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android监听键盘弹出收起并移动界面">
+<meta property="og:url" content="https://ritcheeqing.github.io/2019/03/26/android-keyboard-move/index.html">
 <meta property="og:site_name" content="Q.R&#39;s Blog">
-<meta property="og:description" content="A blog for sharing">
+<meta property="og:description" content="Android 监听键盘弹出收起 - 掘金代码中所用的监听键盘部分来自这里  目的：不使用AdjustPan达到AdjustPan的功能，用这个的话设置AdjustResize就好了，这种方法也可以自己修改键盘抬升的距离，相比系统默认顶到EditText底下会好一点吧。用法：new, add方法：计算EditText底部和当前更改后的Windows底部的差值，抬升这个差值就好了，应该不用考虑状态">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-03-26T11:44:43.000Z">
+<meta property="article:modified_time" content="2020-03-15T04:47:51.288Z">
 <meta property="article:author" content="RitcheeQinG">
+<meta property="article:tag" content="Android">
 <meta name="twitter:card" content="summary">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/gh/nexmoe/nexmoe.github.io@latest/css/style.css,npm/highlight.js@9.15.8/styles/atom-one-dark.css,gh/nexmoe/nexmoe.github.io@latest/lib/mdui_043tiny/css/mdui.css,gh/nexmoe/nexmoe.github.io@latest/lib/iconfont/iconfont.css" crossorigin>
   
-  <!--<link rel="stylesheet" href="/css/style.css?v=1584249755485">-->
+  <!--<link rel="stylesheet" href="/css/style.css?v=1584249755446">-->
 
   
 <meta name="generator" content="Hexo 4.1.1"></head>
@@ -270,77 +273,259 @@
   </div>
   <div id="nexmoe-content">
     <div class="nexmoe-primary">
-        
-<section class="nexmoe-archives">
+        <div class="nexmoe-post">
+  
+      <div class="nexmoe-post-cover" style="padding-bottom: 56.25%;"> 
+          <img data-src="https://cdn.jsdelivr.net/gh/ritcheeqing/resources@latest/images/cover_yousa_qixi.PNG" data-sizes="auto" alt="Android监听键盘弹出收起并移动界面" class="lazyload">
+          <h1>Android监听键盘弹出收起并移动界面</h1>
+      </div>
+  
+  
+  <div class="nexmoe-post-meta" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2019年03月26日</a>
+    <a><i class="nexmoefont icon-areachart"></i>975 字</a>
+    <a><i class="nexmoefont icon-time-circle-fill"></i>大概 4 分钟</a>
+</div>
 
-    <article>
-        
+  <div class="nexmoe-post-right">
+    
+  </div>
 
-        
-            <h2>2020</h2>
-            <ul>
-            
-                <li><span>03-07</span><a href="/2020/03/07/friends/" >Friends</a></li>
-            
-                <li><span>03-07</span><a href="/2020/03/07/about/" >About</a></li>
-            
-                <li><span>03-07</span><a href="/2020/03/07/Functions/" >Functions</a></li>
-            
-            </ul>
-        
-    </article>
+  <article>
+    <blockquote>
+<p><a href="https://juejin.im/post/5a31e42ff265da43163d14fe" target="_blank" rel="noopener">Android 监听键盘弹出收起 - 掘金</a><br>代码中所用的监听键盘部分来自这里</p>
+</blockquote>
+<p><strong>目的：</strong>不使用AdjustPan达到AdjustPan的功能，用这个的话设置AdjustResize就好了，这种方法也可以自己修改键盘抬升的距离，相比系统默认顶到EditText底下会好一点吧。<br><strong>用法：</strong>new, add<br><strong>方法：</strong>计算EditText底部和当前更改后的Windows底部的差值，抬升这个差值就好了，应该不用考虑状态栏高度的问题<br><strong>问题：</strong>解决不了View捅进透明状态栏的问题，以及谁知道在什么手机上会不会冒出来些奇怪的问题<br><strong>解决方案：</strong>更新后可以自己传自己希望的contentView进去，不是最外层布局的话应该不会捅进透明状态栏里面去。<br><strong>其他：这个不用时记得删，不然会造成没必要的空间和时间损耗。<br>这个监听调用次数特别频繁，所以不用时一定要remove掉。<br>实际上因为这个会持有一个View的对象，可能还有别的更好的写法，本菜鸡设计模式比较菜emm，等哪天把设计模式翻一遍，有机会还会再更新</strong></p>
+<h2 id="更新："><a href="#更新：" class="headerlink" title="更新："></a>更新：</h2><p>换了点内容，原来的类我还留着，放底下了。<br>新的这个我换了个构造函数，现在可以直接传contentView进来，然后EditText是通过获取Activity再获取焦点的方式得到的，另外新增了一个键盘弹出时调用的Listener还有添加offset的接口</p>
+<pre><code class="lang-java">import android.app.Activity;
+import android.graphics.Rect;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.widget.EditText;
+
+public class KeyboardChangeHelper implements ViewTreeObserver.OnGlobalLayoutListener {
+
+    private View contentView;
+    private EditText targetView;
+    private int rootViewVisibleHeight = 0;
+    private int offset;
+    private OnKeyboardShowListener listener;
+
+    public KeyboardChangeHelper(View contentView) {
+        this.contentView = contentView;
+        setTranslationOffset(0);
+    }
+
+    @Override
+    public void onGlobalLayout() {
+        if (!initTargetView()) {
+            return;
+        }
+        Rect r = new Rect();
+        contentView.getWindowVisibleDisplayFrame(r);
+        int visibleHeight = r.height();
+        if (rootViewVisibleHeight == 0) {
+            rootViewVisibleHeight = visibleHeight;
+            return;
+        }
+        //根视图显示高度没有变化，可以看作软键盘显示／隐藏状态没有改变
+        if (rootViewVisibleHeight == visibleHeight) {
+            return;
+        }
+        //根视图显示高度变小超过200，可以看作软键盘显示了
+        if (rootViewVisibleHeight - visibleHeight &gt; 200) {
+            rootViewVisibleHeight = visibleHeight;
+            if (null != listener) {
+                listener.onKeyboardShow();
+            }
+            layoutResize(true, r.bottom);
+            return;
+        }
+        //根视图显示高度变大超过200，可以看作软键盘隐藏了
+        if (visibleHeight - rootViewVisibleHeight &gt; 200) {
+            rootViewVisibleHeight = visibleHeight;
+            if (null != listener) {
+                listener.onKeyboardHide();
+            }
+            layoutResize(false, 0);
+        }
+    }
+
+    private void layoutResize(boolean isKeyboardShow, int currentBottom) {
+        int resizeHeight = 0;
+        Rect rect = new Rect();
+        if (null != targetView) {
+            targetView.getGlobalVisibleRect(rect);
+            // rect.bottom 获取到的时EditText的底部，加上offset是再往下offset距离的底部
+            resizeHeight = rect.bottom + offset - currentBottom;
+        }
+        if (resizeHeight &lt; 0) {
+            return;
+        }
+        if (isKeyboardShow) {
+            contentView.setTranslationY(-resizeHeight);
+        } else {
+            contentView.setTranslationY(0);
+        }
+    }
+
+    private boolean initTargetView() {
+        View focusedView;
+        Activity activity = (Activity) contentView.getContext();
+        if (null != activity) {
+            focusedView = activity.getCurrentFocus();
+        } else {
+            return false;
+        }
+        if (focusedView instanceof EditText) {
+            targetView = (EditText)focusedView;
+        }
+        return true;
+    }
+
+    public void addListener() {
+        contentView.getViewTreeObserver().addOnGlobalLayoutListener(this);
+    }
+
+    public void removeListener() {
+        // remember to remove if used
+        contentView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+    }
+
+    public void setTranslationOffset(int offset) {
+        this.offset = offset;
+    }
+
+    public void addOnKeyboardShowListener(OnKeyboardShowListener listener) {
+        this.listener = listener;
+    }
+
+    public interface OnKeyboardShowListener {
+        void onKeyboardShow();
+        void onKeyboardHide();
+    }
+}
+</code></pre>
+<p>下面是原来的：</p>
+<pre><code class="lang-java">import android.graphics.Rect;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.widget.EditText;
+
+public class KeyboardChangeHelper implements ViewTreeObserver.OnGlobalLayoutListener {
+
+    private View contentView;
+    private EditText targetView;
+    private int rootViewVisibleHeight = 0;
+
+    public KeyboardChangeHelper(EditText targetView) {
+        this.contentView = targetView.getRootView();
+        this.targetView = targetView;
+    }
+
+    @Override
+    public void onGlobalLayout() {
+        Rect r = new Rect();
+        contentView.getWindowVisibleDisplayFrame(r);
+        int visibleHeight = r.height();
+        System.out.println(&quot;&quot;+visibleHeight);
+        if (rootViewVisibleHeight == 0) {
+            rootViewVisibleHeight = visibleHeight;
+            return;
+        }
+        //根视图显示高度没有变化，可以看作软键盘显示／隐藏状态没有改变
+        if (rootViewVisibleHeight == visibleHeight) {
+            return;
+        }
+        //根视图显示高度变小超过200，可以看作软键盘显示了
+        if (rootViewVisibleHeight - visibleHeight &gt; 200) {
+            rootViewVisibleHeight = visibleHeight;
+            layoutResize(true, r.bottom);
+            return;
+        }
+        //根视图显示高度变大超过200，可以看作软键盘隐藏了
+        if (visibleHeight - rootViewVisibleHeight &gt; 200) {
+            rootViewVisibleHeight = visibleHeight;
+            layoutResize(false, 0);
+        }
+    }
+
+    private void layoutResize(boolean isKeyboardShow, int currentBottom) {
+        int resizeHeight = 0;
+        Rect rect = new Rect();
+        if (null != targetView) {
+            targetView.getGlobalVisibleRect(rect);
+            resizeHeight = rect.bottom - currentBottom;
+        }
+        if (resizeHeight &lt; 0) {
+            return;
+        }
+        if (isKeyboardShow) {
+            contentView.setTranslationY(-resizeHeight);
+        } else {
+            contentView.setTranslationY(0);
+        }
+    }
+
+    public void addListener() {
+        contentView.getViewTreeObserver().addOnGlobalLayoutListener(this);
+    }
+
+    public void removeListener() {
+        // remember to remove if used
+        contentView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+    }
+}
+</code></pre>
+<p>有爱自取，毕竟搞这个本身没什么技术含量，<del>（有技术含量我也搞不出来）</del></p>
+
+  </article>
+
+  <div class="nexmoe-post-meta">
+    
+        <a class="nexmoefont icon-appstore-fill -link" href="/categories/Tech/">Tech</a><a class="nexmoefont icon-appstore-fill -link" href="/categories/Tech/Android/">Android</a>
+    
+    
+        <a class="nexmoefont icon-tag-fill -link" href="/tags/Android/" rel="tag">Android</a>
+    
+</div>
+
+  <div class="nexmoe-post-footer">
+    
+      
+  <div class="nexmoe-post-copyright">
+    <strong>Author：</strong>RitcheeQinG<br>
+    <strong>Link：</strong><a href="https://ritcheeqing.github.io/2019/03/26/android-keyboard-move/" title="https:&#x2F;&#x2F;ritcheeqing.github.io&#x2F;2019&#x2F;03&#x2F;26&#x2F;android-keyboard-move&#x2F;" target="_blank" rel="noopener">https:&#x2F;&#x2F;ritcheeqing.github.io&#x2F;2019&#x2F;03&#x2F;26&#x2F;android-keyboard-move&#x2F;</a><br>
+    
+      <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+    
+  </div>
+
+
+    
+    <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.0/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.0/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'nexmoe.github.io',
+        owner: 'nexmoe',
+        admin: 'nexmoe'
+    })
+    gitalk.render('gitalk')
+</script>
 </section>
-
-<style>
-.nexmoe-archives article > *:first-child {
-    margin-top: 0;
-}
-.nexmoe-archives article > *:last-child {
-    margin-bottom: 0;
-}
-.nexmoe-archives ul {
-    list-style: none;
-    padding-left: 0!important;
-}
-.nexmoe-archives li {
-    position: relative;
-    padding: 10px 0;
-}
-.nexmoe-archives li::before {
-    content: "";
-    width: 14px;
-    height: 14px;
-    background: #ff4e6a;
-    display: inline-block;
-    vertical-align: middle;
-    margin-top: -2px;
-    margin-right: 11px;
-    border-radius: 100%;
-    border: 3px solid #fff;
-    z-index: 100;
-    position: relative;
-}
-.nexmoe-archives li::after {
-    content: "";
-    height: 100%;
-    width: 2px;
-    background: rgba(255, 78, 106, 0.2);
-    position: absolute;
-    left: 6px;
-    top: 20px;
-}
-.nexmoe-archives li:last-child:after {
-    display: none;
-}
-.nexmoe-archives span {
-    margin-right: 15px;
-}
-</style>
+  </div>
+</div>
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,gh/highlightjs/cdn-release@9.15.8/build/highlight.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js,gh/nexmoe/nexmoe.github.io@latest/js/app.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
-<!--<script src="/js/app.js?v=1584249755486"></script>-->
+<!--<script src="/js/app.js?v=1584249755448"></script>-->
 
 
     <script src="https://cdn.jsdelivr.net/gh/xtaodada/xtaodada.github.io@0.0.2/copy.js"></script>

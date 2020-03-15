@@ -20,13 +20,13 @@
 <meta property="og:description" content="关于Nexmoe主题Tagcloud的bug 我在使用过程中发现，主题的tagcloud里面的tag的高亮没有了 每篇文章开头的时间等信息的高亮也没了  我个人不太懂web，研究了一下午找到了一个临时的解决办法 问题出现的原因似乎是由于index页面的css是从nexmoe作者的github里面下下来的，然而下载下来的css里面对tagcloud又没配置。 解决办法直接把css加在index文件里">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-03-10T14:40:28.000Z">
-<meta property="article:modified_time" content="2020-03-10T14:55:21.865Z">
+<meta property="article:modified_time" content="2020-03-15T04:17:21.118Z">
 <meta property="article:author" content="RitcheeQinG">
 <meta property="article:tag" content="Theme">
 <meta name="twitter:card" content="summary">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/gh/nexmoe/nexmoe.github.io@latest/css/style.css,npm/highlight.js@9.15.8/styles/atom-one-dark.css,gh/nexmoe/nexmoe.github.io@latest/lib/mdui_043tiny/css/mdui.css,gh/nexmoe/nexmoe.github.io@latest/lib/iconfont/iconfont.css" crossorigin>
   
-  <!--<link rel="stylesheet" href="/css/style.css?v=1583853744674">-->
+  <!--<link rel="stylesheet" href="/css/style.css?v=1584249755426">-->
 
   
 <meta name="generator" content="Hexo 4.1.1"></head>
@@ -52,9 +52,9 @@
         </a>
     </div>
     <div class="nexmoe-count">
-        <div><span>Articles</span>6</div>
-        <div><span>Tags</span>3</div>
-        <div><span>Categories</span>0</div>
+        <div><span>Articles</span>12</div>
+        <div><span>Tags</span>4</div>
+        <div><span>Categories</span>5</div>
     </div>
     <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
         
@@ -109,13 +109,65 @@
 </div>
   
   
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">Categories</h3>
+    <div class="nexmoe-widget">
+
+      <ul class="category-list">
+
+        
+
+
+        
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Tech/Android/">Android</a>
+          <span class="category-list-count">5</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Blog/">Blog</a>
+          <span class="category-list-count">4</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Issues/">Issues</a>
+          <span class="category-list-count">1</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Tech/NFV/">NFV</a>
+          <span class="category-list-count">2</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Tech/">Tech</a>
+          <span class="category-list-count">7</span>
+        </li>
+
+        
+      </ul>
+
+    </div>
+  </div>
+
 
   
   
   <div class="nexmoe-widget-wrap">
     <h3 class="nexmoe-widget-title">Tag Cloud</h3>
     <div id="randomtagcloud" class="nexmoe-widget tagcloud">
-      <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/Mysis/" style="font-size: 20px;">Mysis</a> <a href="/tags/Theme/" style="font-size: 10px;">Theme</a>
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/DPDK/" style="font-size: 13.33px;">DPDK</a> <a href="/tags/Mysis/" style="font-size: 16.67px;">Mysis</a> <a href="/tags/Theme/" style="font-size: 10px;">Theme</a>
     </div>
     
   </div>
@@ -205,7 +257,7 @@
   <div class="nexmoe-widget-wrap">
     <h3 class="nexmoe-widget-title">Archive</h3>
     <div class="nexmoe-widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li></ul>
     </div>
   </div>
 
@@ -337,6 +389,8 @@
 
   <div class="nexmoe-post-meta">
     
+        <a class="nexmoefont icon-appstore-fill -link" href="/categories/Blog/">Blog</a>
+    
     
         <a class="nexmoefont icon-tag-fill -link" href="/tags/Theme/" rel="tag">Theme</a>
     
@@ -377,7 +431,7 @@
   </div>
   <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,gh/highlightjs/cdn-release@9.15.8/build/highlight.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js,gh/nexmoe/nexmoe.github.io@latest/js/app.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
-<!--<script src="/js/app.js?v=1583853744677"></script>-->
+<!--<script src="/js/app.js?v=1584249755429"></script>-->
 
 
     <script src="https://cdn.jsdelivr.net/gh/xtaodada/xtaodada.github.io@0.0.2/copy.js"></script>

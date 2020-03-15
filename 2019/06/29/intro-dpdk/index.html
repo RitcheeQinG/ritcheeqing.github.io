@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  
+  <title>DPDK简单介绍 - Q.R&#39;s Blog</title>
+  <meta charset="UTF-8">
+  <meta name="description" content="A blog for sharing">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+  
+  
+
+  <link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/ritcheeqing/resources@latest/images/favicon.ico" type="image/x-icon" />
+  <meta name="description" content="本篇主要介绍DPDK的简单安装使用和一点其他相关内容，希望对初学者有所帮助。  本文打算写的内容：  对DPDK是什么和做什么用的简单介绍 CentOS和Ubuntu安装DPDK的环境及流程 关于一个基于DPDK的很好用的报文发送工具 —— dpdk-pktgen的简单安装使用教程  1. 对DPDK的介绍 来自官方项目地址DPDK is a set of libraries and drive">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DPDK简单介绍">
+<meta property="og:url" content="https://ritcheeqing.github.io/2019/06/29/intro-dpdk/index.html">
+<meta property="og:site_name" content="Q.R&#39;s Blog">
+<meta property="og:description" content="本篇主要介绍DPDK的简单安装使用和一点其他相关内容，希望对初学者有所帮助。  本文打算写的内容：  对DPDK是什么和做什么用的简单介绍 CentOS和Ubuntu安装DPDK的环境及流程 关于一个基于DPDK的很好用的报文发送工具 —— dpdk-pktgen的简单安装使用教程  1. 对DPDK的介绍 来自官方项目地址DPDK is a set of libraries and drive">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/15568908-17d96d429474b202.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/15568908-ce6aafda3b4c52a8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="article:published_time" content="2019-06-28T18:18:30.000Z">
+<meta property="article:modified_time" content="2020-03-15T05:21:34.669Z">
+<meta property="article:author" content="RitcheeQinG">
+<meta property="article:tag" content="DPDK">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/15568908-17d96d429474b202.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/gh/nexmoe/nexmoe.github.io@latest/css/style.css,npm/highlight.js@9.15.8/styles/atom-one-dark.css,gh/nexmoe/nexmoe.github.io@latest/lib/mdui_043tiny/css/mdui.css,gh/nexmoe/nexmoe.github.io@latest/lib/iconfont/iconfont.css" crossorigin>
+  
+  <!--<link rel="stylesheet" href="/css/style.css?v=1584249755435">-->
+
+  
+<meta name="generator" content="Hexo 4.1.1"></head>
+
+<body class="mdui-drawer-body-left">
+  
+  <div id="nexmoe-background">
+    <div class="nexmoe-bg" style="background-image: url(https://cdn.jsdelivr.net/gh/ritcheeqing/resources@latest/images/cover_yousa_qixi.PNG)"></div>
+    <div class="mdui-appbar mdui-shadow-0">
+      <div class="mdui-toolbar">
+        <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+        <div class="mdui-toolbar-spacer"></div>
+        <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+        <a href="/" title="RitcheeQinG" class="mdui-btn mdui-btn-icon"><img src="https://cdn.jsdelivr.net/gh/ritcheeqing/resources@latest/images/avatar.png" alt="RitcheeQinG"></a>
+       </div>
+    </div>
+  </div>
+  <div id="nexmoe-header">
+      <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="RitcheeQinG">
+            <img src="https://cdn.jsdelivr.net/gh/ritcheeqing/resources@latest/images/avatar.png" alt="RitcheeQinG" alt="RitcheeQinG">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>Articles</span>12</div>
+        <div><span>Tags</span>4</div>
+        <div><span>Categories</span>5</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/archives" title="文章归档">
+            <i class="mdui-list-item-icon nexmoefont icon-container"></i>
+            <div class="mdui-list-item-content">
+                文章归档
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/friends.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+  
+  <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+        <form id="search_form" action_e="https://www.baidu.com/s?wd=ritcheeqing" onsubmit="return search();">
+            <label><input id="search_value" name="q" type="search" placeholder="Search"></label>
+        </form>
+    </div>
+</div>
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">Social</h3>
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://space.bilibili.com/1668675" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/RitcheeQinG" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(25, 23, 23);background-color: rgba(25, 23, 23, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+  
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">Categories</h3>
+    <div class="nexmoe-widget">
+
+      <ul class="category-list">
+
+        
+
+
+        
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Tech/Android/">Android</a>
+          <span class="category-list-count">5</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Blog/">Blog</a>
+          <span class="category-list-count">4</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Issues/">Issues</a>
+          <span class="category-list-count">1</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Tech/NFV/">NFV</a>
+          <span class="category-list-count">2</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Tech/">Tech</a>
+          <span class="category-list-count">7</span>
+        </li>
+
+        
+      </ul>
+
+    </div>
+  </div>
+
+
+  
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">Tag Cloud</h3>
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/DPDK/" style="font-size: 13.33px;">DPDK</a> <a href="/tags/Mysis/" style="font-size: 16.67px;">Mysis</a> <a href="/tags/Theme/" style="font-size: 10px;">Theme</a>
+    </div>
+    
+  </div>
+  <style>
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+1) {
+    background-color: rgba(255,78,106,0.15);
+    color: rgba(255,78,106,0.8);
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+2) {
+    background-color: rgba(255,170,115,0.15);
+    color: #ffaa73;
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+3) {
+    background-color: rgba(254,212,102,0.15);
+    color: #fed466;
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+4) {
+    background-color: rgba(60,220,130,0.15);
+    color: #3cdc82;
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+5) {
+    background-color: rgba(100,220,240,0.15);
+    color: #64dcf0;
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+6) {
+    background-color: rgba(100,185,255,0.15);
+    color: #64b9ff;
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+7) {
+    background-color: rgba(180,180,255,0.15);
+    color: #b4b4ff;
+    }
+
+    
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta {
+    margin: 25px 0px;
+    font-size: 0;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a {
+    border-radius: 20px;
+    padding: 10px 18px;
+    color: #fff;
+    font-size: 14px;
+    display: inline-block;
+    margin-bottom: 5px;
+    margin-right: 10px;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a .nexmoefont {
+    font-size: 14px;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:before,
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta i:before {
+    margin-right: 5px;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+1) {
+    background-color: rgba(255,78,106,0.15);
+    color: #ff4e6a;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+2) {
+    background-color: rgba(255,170,115,0.15);
+    color: #ffaa73;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+3) {
+    background-color: rgba(254,212,102,0.15);
+    color: #fed466;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+4) {
+    background-color: rgba(60,220,130,0.15);
+    color: #3cdc82;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+5) {
+    background-color: rgba(100,220,240,0.15);
+    color: #64dcf0;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+6) {
+    background-color: rgba(100,185,255,0.15);
+    color: #64b9ff;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+7) {
+    background-color: rgba(180,180,255,0.15);
+    color: #b4b4ff;
+    }
+</style>
+
+  
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">Archive</h3>
+    <div class="nexmoe-widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2020 RitcheeQinG
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://nexmoe.com/hexo-theme-nexmoe.html" target="_blank">Nexmoe</a>
+    </div>
+</div><!-- .nexmoe-drawer -->
+  </div>
+  <div id="nexmoe-content">
+    <div class="nexmoe-primary">
+        <div class="nexmoe-post">
+  
+      <div class="nexmoe-post-cover" style="padding-bottom: 56.25%;"> 
+          <img data-src="https://cdn.jsdelivr.net/gh/ritcheeqing/resources@latest/images/cover_yousa_qixi.PNG" data-sizes="auto" alt="DPDK简单介绍" class="lazyload">
+          <h1>DPDK简单介绍</h1>
+      </div>
+  
+  
+  <div class="nexmoe-post-meta" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2019年06月29日</a>
+    <a><i class="nexmoefont icon-areachart"></i>2.2k 字</a>
+    <a><i class="nexmoefont icon-time-circle-fill"></i>大概 10 分钟</a>
+</div>
+
+  <div class="nexmoe-post-right">
+    
+  </div>
+
+  <article>
+    <blockquote>
+<p>本篇主要介绍<a href="http://core.dpdk.org/doc/quick-start/" target="_blank" rel="noopener">DPDK</a>的简单安装使用和一点其他相关内容，希望对初学者有所帮助。</p>
+</blockquote>
+<p><strong>本文打算写的内容：</strong></p>
+<ol>
+<li>对DPDK是什么和做什么用的简单介绍</li>
+<li>CentOS和Ubuntu安装DPDK的环境及流程</li>
+<li>关于一个基于DPDK的很好用的报文发送工具 —— dpdk-pktgen的简单安装使用教程</li>
+</ol>
+<h2 id="1-对DPDK的介绍"><a href="#1-对DPDK的介绍" class="headerlink" title="1. 对DPDK的介绍"></a>1. 对DPDK的介绍</h2><blockquote>
+<p>来自<a href="https://github.com/DPDK/dpdk" target="_blank" rel="noopener">官方项目地址</a><br>DPDK is a set of libraries and drivers for fast packet processing.<br>It supports many processor architectures and both FreeBSD and Linux.<br>是一个用来进行快速报文处理的库和驱动集，支持<del>多核架构</del>以及FreeBSD和Linux。<br><strong>评论指正：官方文档中many processor architectures应该是多种处理器架构的意思</strong></p>
+</blockquote>
+<p><strong>用途：</strong>用来绑定和优化物理网卡驱动，提高其处理性能</p>
+<p><strong>DPDK相关技术：</strong><br><em>（不详写，具体建议Google）</em></p>
+<ol>
+<li>大页内存：用来减少TLB miss，提高效率</li>
+<li>IGB UIO：用户态的网卡驱动，用来取代原有的驱动，其中<strong>用户态是DPDK的核心之一</strong>（话说我至今搞不明白IGB是什么的缩写）</li>
+<li>轮询模式：用来取代收报文进行处理时产生的中断，靠中断的话CPU效率太低，所以采用轮询来处理</li>
+<li>NUMA架构：Non Uniform Memory Access Architecture，建议Google</li>
+</ol>
+<h2 id="2-DPDK安装"><a href="#2-DPDK安装" class="headerlink" title="2. DPDK安装"></a>2. DPDK安装</h2><h3 id="2-1-环境配置"><a href="#2-1-环境配置" class="headerlink" title="2.1. 环境配置"></a>2.1. 环境配置</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>配置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>操作系统</td>
+<td>CentOS / Ubuntu</td>
+</tr>
+<tr>
+<td>CPU</td>
+<td>8核</td>
+</tr>
+<tr>
+<td>内存</td>
+<td>4G</td>
+</tr>
+<tr>
+<td>网卡</td>
+<td>最好两张以上</td>
+</tr>
+<tr>
+<td>大页内存</td>
+<td>最好512MB以上</td>
+</tr>
+<tr>
+<td>DPDK版本</td>
+<td>越高坑越少</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="2-2-影响因素"><a href="#2-2-影响因素" class="headerlink" title="2.2. 影响因素"></a>2.2. 影响因素</h3><p>上面是个建议的运行配置，下面详细说说</p>
+<ol>
+<li>关于系统版本：一般没太大影响，DPDK似乎会被内核驱动的版本影响，但是我运行高版本的DPDK时没遇到类似问题</li>
+<li>关于CPU： <strong>CPU核数自然是越高越好</strong>，这直接牵扯到处理能力。但是实际使用DPDK时牵扯到一个绑定CPU给DPDK线程的问题，这个具体到那里时会有所介绍，这里只简单表示：没必要绑定多余的CPU给DPDK线程，性能反而有可能降低。</li>
+<li>内存：没啥好说的，越高越好，内存够大才能分配足够的大页内存，而<strong>大页内存又是直接影响DPDK性能的因素</strong>之一</li>
+<li>网卡： DPDK绑定网卡之后原来的网络驱动就没用了，原先的协议栈中网络层及IP地址之类的全都会失效，还想连网建议多搞个网卡</li>
+<li>大页内存：越高越好，影响性能，低了DPDK甚至没法正常用，可能报这个 ——<br><img data-sizes="auto" data-src="https://upload-images.jianshu.io/upload_images/15568908-17d96d429474b202.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Cannot Allocate Memory" class="lazyload"></li>
+<li>DPDK版本：现在都19.05了，除非是基于DPDK进行开发的开发者，版本改动可能影响较大，新接触建议选择高版本，坑少真的能省很多很多事情……</li>
+<li>关于一些其他的可能的性能影响因素： 建议开启CPU超频，建议关掉防火墙，关掉蓝牙等用不上的功能<h3 id="2-3-安装过程"><a href="#2-3-安装过程" class="headerlink" title="2.3. 安装过程"></a>2.3. 安装过程</h3></li>
+<li>安之前最好安一下DPDK一些的依赖项，比较重要的：<pre><code class="lang-shell"># CentOS:
+1: sudo yum install libnuma-devel
+2: sudo yum install git
+3: sudo yum install gcc
+4: sudo yum install net-tools
+# Ubuntu:
+1: sudo apt install libnuma-dev
+2: sudo apt install git
+3: sudo apt install gcc
+4: sudo apt install net-tools
+</code></pre>
+其他还缺什么的话，建议根据到时候具体的错误信息进行查询</li>
+<li>安装过程<pre><code class="lang-bash">1: ifconfig
+2: sudo ens33 ifconfig down 
+3: cd / 
+4: git clone https://github.com/DPDK/dpdk.git
+5: cd dpdk
+6: export RTE_SDK = /dpdk
+7: sudo ./usertools/dpdk-setup.sh
+</code></pre>
+</li>
+</ol>
+<p><strong>步骤1和2：</strong> 查看网卡信息，然后关了回头要绑定给DPDK的网卡，不关绑不上的，绑不上用不了的，会提示你还没绑网卡的<br><strong>步骤6：</strong> 配置环境变量，下在哪配在哪，这里顺带一提，<strong>大部分基于DPDK开发的应用都要配两个特别重要的环境变量</strong>：<code>RTE_SDK</code>和<code>RTE_TARGET</code>，这俩一个代表DPDK下载地址，一个代表编译后文件的生成地址。<br><strong>步骤7：</strong> 运行DPDK安装脚本，不建议自行一个个使用命令来安装。<br>运行步骤7之后：</p>
+<pre><code>------------------------------------------------------------------------------
+ RTE_SDK exported as /root/dpdk
+------------------------------------------------------------------------------
+----------------------------------------------------------
+ Step 1: Select the DPDK environment to build
+----------------------------------------------------------
+[1] arm64-armv8a-linuxapp-clang
+[2] arm64-armv8a-linuxapp-gcc
+[3] arm64-armv8a-linux-clang
+[4] arm64-armv8a-linux-gcc
+[5] arm64-bluefield-linuxapp-gcc
+[6] arm64-bluefield-linux-gcc
+[7] arm64-dpaa2-linuxapp-gcc
+[8] arm64-dpaa2-linux-gcc
+[9] arm64-dpaa-linuxapp-gcc
+[10] arm64-dpaa-linux-gcc
+[11] arm64-octeontx2-linuxapp-gcc
+[12] arm64-octeontx2-linux-gcc
+[13] arm64-stingray-linuxapp-gcc
+[14] arm64-stingray-linux-gcc
+[15] arm64-thunderx2-linuxapp-gcc
+[16] arm64-thunderx2-linux-gcc
+[17] arm64-thunderx-linuxapp-gcc
+[18] arm64-thunderx-linux-gcc
+[19] arm64-xgene1-linuxapp-gcc
+[20] arm64-xgene1-linux-gcc
+[21] arm-armv7a-linuxapp-gcc
+[22] arm-armv7a-linux-gcc
+[23] i686-native-linuxapp-gcc
+[24] i686-native-linuxapp-icc
+[25] i686-native-linux-gcc
+[26] i686-native-linux-icc
+[27] ppc_64-power8-linuxapp-gcc
+[28] ppc_64-power8-linux-gcc
+[29] x86_64-native-bsdapp-clang
+[30] x86_64-native-bsdapp-gcc
+[31] x86_64-native-freebsd-clang
+[32] x86_64-native-freebsd-gcc
+[33] x86_64-native-linuxapp-clang
+[34] x86_64-native-linuxapp-gcc
+[35] x86_64-native-linuxapp-icc
+[36] x86_64-native-linux-clang
+[37] x86_64-native-linux-gcc
+[38] x86_64-native-linux-icc
+[39] x86_x32-native-linuxapp-gcc
+[40] x86_x32-native-linux-gcc
+
+----------------------------------------------------------
+ Step 2: Setup linux environment
+----------------------------------------------------------
+[41] Insert IGB UIO module
+[42] Insert VFIO module
+[43] Insert KNI module
+[44] Setup hugepage mappings for non-NUMA systems
+[45] Setup hugepage mappings for NUMA systems
+[46] Display current Ethernet/Crypto device settings
+[47] Bind Ethernet/Crypto device to IGB UIO module
+[48] Bind Ethernet/Crypto device to VFIO module
+[49] Setup VFIO permissions
+
+----------------------------------------------------------
+ Step 3: Run test application for linux environment
+----------------------------------------------------------
+[50] Run test application ($RTE_TARGET/app/test)
+[51] Run testpmd application in interactive mode ($RTE_TARGET/app/testpmd)
+
+----------------------------------------------------------
+ Step 4: Other tools
+----------------------------------------------------------
+[52] List hugepage info from /proc/meminfo
+
+----------------------------------------------------------
+ Step 5: Uninstall and system cleanup
+----------------------------------------------------------
+[53] Unbind devices from IGB UIO or VFIO driver
+[54] Remove IGB UIO module
+[55] Remove VFIO module
+[56] Remove KNI module
+[57] Remove hugepage mappings
+
+[58] Exit Script
+
+Option:
+</code></pre><p>输入对应的命令数字就可以执行操作了，执行的顺序是：</p>
+<ol>
+<li><code>x86_64-native-linuxapp-gcc</code><br>选择build的平台，系统和编译器，及x86_64平台，linux系统，c语言编译器</li>
+<li><code>Insert IGB UIO module</code><br>插入IGB UIO驱动，必须在编译后才能正常运行，而它运行后才能顺利执行后面的操作</li>
+<li><code>Setup hugepage mappings for NUMA systems</code><br>配置大页内存，选之后输入数目就行了，一般大页内存分两种，2M的和1G的</li>
+<li><code>Bind Ethernet/Crypto device to IGB UIO module</code><br>把网卡绑定给UIO，详细如下：</li>
+</ol>
+<pre><code>Option: 47
+
+
+Network devices using DPDK-compatible driver
+============================================
+0000:02:01.0 &#39;82545EM Gigabit Ethernet Controller (Copper) 100f&#39; drv=igb_uio unused=e1000
+0000:02:06.0 &#39;82545EM Gigabit Ethernet Controller (Copper) 100f&#39; drv=igb_uio unused=e1000
+
+Network devices using kernel driver
+===================================
+0000:02:07.0 &#39;82545EM Gigabit Ethernet Controller (Copper) 100f&#39; if=ens39 drv=e1000 unused=igb_uio 
+
+No &#39;Crypto&#39; devices detected
+============================
+
+No &#39;Eventdev&#39; devices detected
+==============================
+
+No &#39;Mempool&#39; devices detected
+=============================
+
+No &#39;Compress&#39; devices detected
+==============================
+
+Enter PCI address of device to bind to IGB UIO driver:
+</code></pre><p>假设你要绑定最上面那个，输入<code>02:01.0</code>就可以了，绑定之前记得在ifconfig里面把它关了</p>
+<ol>
+<li><code>Run testpmd application in interactive mode ($RTE_TARGET/app/testpmd)</code><br>从括号里就能看到DPDK自带的app编译完了都在<code>RTE_TARGET</code>这个路径下面，这个是个DPDK的测试程序，可以检测下DPDK安成功了没</li>
+<li>关于testpmd，<a href="https://doc.dpdk.org/guides/testpmd_app_ug/" target="_blank" rel="noopener">直接看这里吧</a></li>
+</ol>
+<h2 id="3-dpdk-pktgen"><a href="#3-dpdk-pktgen" class="headerlink" title="3. dpdk - pktgen"></a>3. dpdk - pktgen</h2><blockquote>
+<p>这是一个基于DPDK开发的报文发送工具，能指定MAC地址和包大小让它使用起来十分灵活<br>但是对于这个工具我个人还有许多没搞懂的地方，大家使用时见仁见智吧~</p>
+</blockquote>
+<p>直接丢安装方法，先安装依赖：</p>
+<pre><code>1: wget -c http://www.lua.org/ftp/lua-5.3.5.tar.gz
+2: tar zxvf lua-5.3.5.tar.gz
+3: cd lua-5.3.5 
+4: make linux
+Ubuntu 
+5: sudo apt-get install libreadline5 
+6: sudo apt-get install libreadline-gplv2-dev 
+CentOS 
+5/6: yum install readline-devel 
+7: sudo make install
+</code></pre><p>dpdk - pktgen是用lua语言做脚本的，所以需要下载lua和相关内容<br><strong>注意步骤7哪个系统都是要运行的</strong><br>然后安装dpdk - pktgen</p>
+<pre><code>1: export RTE_SDK=/root/dpdk
+2: export RTE_TARGET=x86_64-native-linuxapp-gcc
+3: cd $RTE_SDK
+4: make install T=x86_64-native-linuxapp-gcc
+5: cd /root/pktgen-dpdk
+6: make
+7: ./app/x86_64-linuxapp-gcc/pktgen -l 0-2 -n 3 -- -P -m &quot;[1].0, [2].1&quot;
+8: set 0 dst mac &lt;mac addr&gt;
+9: set 0 dst ip &lt;ip addr&gt;
+10: set 0 size &lt;size between 64 - 1518&gt;
+11: start 0 # str
+</code></pre><p>其中<strong>步骤1-7</strong>是安装过程，<strong>步骤8-11</strong>是简单使用过程。<br>其中步骤7很重要，涉及到初始化操作，直接影响后续使用时的性能表现。<br><strong>步骤8</strong>表示设置MAC地址，<code>dst</code>表示接收端，<code>src</code>表示发送端<br><strong>步骤9</strong>表示设置IP地址，<code>dst</code>同上<br><strong>步骤10</strong>表示发包的包大小<br><strong>步骤11</strong>表示端口0开始发包，<code>str</code>表示所有端口开始发包<br>具体可以运行时使用<code>help</code>命令自行查看</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>数值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-l</td>
+<td>使用到的cpu核</td>
+</tr>
+<tr>
+<td>-n</td>
+<td>内存通道数目</td>
+</tr>
+<tr>
+<td>-m</td>
+<td>内核掩码</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>关于以上内容和性能表现之间的关系本篇并不涉及，内核掩码要讲也可以另开一篇了，所以也不会涉及到，可以自行google。<br>最后放一个运行时的效果图：</p>
+<p><img data-sizes="auto" data-src="https://upload-images.jianshu.io/upload_images/15568908-ce6aafda3b4c52a8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="看起来还是蛮厉害的" class="lazyload"></p>
+
+  </article>
+
+  <div class="nexmoe-post-meta">
+    
+        <a class="nexmoefont icon-appstore-fill -link" href="/categories/Tech/">Tech</a><a class="nexmoefont icon-appstore-fill -link" href="/categories/Tech/NFV/">NFV</a>
+    
+    
+        <a class="nexmoefont icon-tag-fill -link" href="/tags/DPDK/" rel="tag">DPDK</a>
+    
+</div>
+
+  <div class="nexmoe-post-footer">
+    
+      
+  <div class="nexmoe-post-copyright">
+    <strong>Author：</strong>RitcheeQinG<br>
+    <strong>Link：</strong><a href="https://ritcheeqing.github.io/2019/06/29/intro-dpdk/" title="https:&#x2F;&#x2F;ritcheeqing.github.io&#x2F;2019&#x2F;06&#x2F;29&#x2F;intro-dpdk&#x2F;" target="_blank" rel="noopener">https:&#x2F;&#x2F;ritcheeqing.github.io&#x2F;2019&#x2F;06&#x2F;29&#x2F;intro-dpdk&#x2F;</a><br>
+    
+      <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+    
+  </div>
+
+
+    
+    <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.0/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.0/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'nexmoe.github.io',
+        owner: 'nexmoe',
+        admin: 'nexmoe'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+  </div>
+</div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,gh/highlightjs/cdn-release@9.15.8/build/highlight.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js,gh/nexmoe/nexmoe.github.io@latest/js/app.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<!--<script src="/js/app.js?v=1584249755439"></script>-->
+
+
+    <script src="https://cdn.jsdelivr.net/gh/xtaodada/xtaodada.github.io@0.0.2/copy.js"></script>
+
+
+ 
+<script> 
+!function(e,t,a){function n(){c(".heart{width: 10px;height: 10px;position: fixed;background: #f00;transform: rotate(45deg);-webkit-transform: rotate(45deg);-moz-transform: rotate(45deg);}.heart:after,.heart:before{content: '';width: inherit;height: inherit;background: inherit;border-radius: 50%;-webkit-border-radius: 50%;-moz-border-radius: 50%;position: fixed;}.heart:after{top: -5px;}.heart:before{left: -5px;}"),o(),r()}function r(){for(var e=0;e<d.length;e++)d[e].alpha<=0?(t.body.removeChild(d[e].el),d.splice(e,1)):(d[e].y--,d[e].scale+=.004,d[e].alpha-=.013,d[e].el.style.cssText="left:"+d[e].x+"px;top:"+d[e].y+"px;opacity:"+d[e].alpha+";transform:scale("+d[e].scale+","+d[e].scale+") rotate(45deg);background:"+d[e].color+";z-index:99999");requestAnimationFrame(r)}function o(){var t="function"==typeof e.onclick&&e.onclick;e.onclick=function(e){t&&t(),i(e)}}function i(e){var a=t.createElement("div");a.className="heart",d.push({el:a,x:e.clientX-5,y:e.clientY-5,scale:1,alpha:1,color:s()}),t.body.appendChild(a)}function c(e){var a=t.createElement("style");a.type="text/css";try{a.appendChild(t.createTextNode(e))}catch(t){a.styleSheet.cssText=e}t.getElementsByTagName("head")[0].appendChild(a)}function s(){return"rgb("+~~(255*Math.random())+","+~~(255*Math.random())+","+~~(255*Math.random())+")"}var d=[];e.requestAnimationFrame=function(){return e.requestAnimationFrame||e.webkitRequestAnimationFrame||e.mozRequestAnimationFrame||e.oRequestAnimationFrame||e.msRequestAnimationFrame||function(e){setTimeout(e,1e3/60)}}(),n()}(window,document);
+</script>
+
+  
+
+
+
+
+
+</body>
+
+</html>

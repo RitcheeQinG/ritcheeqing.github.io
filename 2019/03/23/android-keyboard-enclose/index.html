@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  
+  <title>Android点击空白区域收起键盘 - Q.R&#39;s Blog</title>
+  <meta charset="UTF-8">
+  <meta name="description" content="A blog for sharing">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+  
+  
+
+  <link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/ritcheeqing/resources@latest/images/favicon.ico" type="image/x-icon" />
+  <meta name="description" content="本文内容 可以添加蒙板来处理点击，以及如何把输入框顶到键盘上面 手动关闭键盘的时机问题 EditText第一次点击不响应的解决方法 通过拦截Activity分发事件来判断此时点击的是EditText还是其他区域，并分别做处理的方法（主要是要说这个） 监听键盘打开的方法 一些其他的，关于EditText的焦点问题   更新：提供了一个判断键盘是否正处于弹出状态的方法，更新在4下面了，这个新的方法不能">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android点击空白区域收起键盘">
+<meta property="og:url" content="https://ritcheeqing.github.io/2019/03/23/android-keyboard-enclose/index.html">
+<meta property="og:site_name" content="Q.R&#39;s Blog">
+<meta property="og:description" content="本文内容 可以添加蒙板来处理点击，以及如何把输入框顶到键盘上面 手动关闭键盘的时机问题 EditText第一次点击不响应的解决方法 通过拦截Activity分发事件来判断此时点击的是EditText还是其他区域，并分别做处理的方法（主要是要说这个） 监听键盘打开的方法 一些其他的，关于EditText的焦点问题   更新：提供了一个判断键盘是否正处于弹出状态的方法，更新在4下面了，这个新的方法不能">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/15568908-69d9d1c96189a06f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="article:published_time" content="2019-03-22T16:44:42.000Z">
+<meta property="article:modified_time" content="2020-03-15T04:46:29.082Z">
+<meta property="article:author" content="RitcheeQinG">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/15568908-69d9d1c96189a06f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/gh/nexmoe/nexmoe.github.io@latest/css/style.css,npm/highlight.js@9.15.8/styles/atom-one-dark.css,gh/nexmoe/nexmoe.github.io@latest/lib/mdui_043tiny/css/mdui.css,gh/nexmoe/nexmoe.github.io@latest/lib/iconfont/iconfont.css" crossorigin>
+  
+  <!--<link rel="stylesheet" href="/css/style.css?v=1584249755451">-->
+
+  
+<meta name="generator" content="Hexo 4.1.1"></head>
+
+<body class="mdui-drawer-body-left">
+  
+  <div id="nexmoe-background">
+    <div class="nexmoe-bg" style="background-image: url(https://cdn.jsdelivr.net/gh/ritcheeqing/resources@latest/images/cover_yousa_qixi.PNG)"></div>
+    <div class="mdui-appbar mdui-shadow-0">
+      <div class="mdui-toolbar">
+        <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+        <div class="mdui-toolbar-spacer"></div>
+        <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+        <a href="/" title="RitcheeQinG" class="mdui-btn mdui-btn-icon"><img src="https://cdn.jsdelivr.net/gh/ritcheeqing/resources@latest/images/avatar.png" alt="RitcheeQinG"></a>
+       </div>
+    </div>
+  </div>
+  <div id="nexmoe-header">
+      <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="RitcheeQinG">
+            <img src="https://cdn.jsdelivr.net/gh/ritcheeqing/resources@latest/images/avatar.png" alt="RitcheeQinG" alt="RitcheeQinG">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>Articles</span>12</div>
+        <div><span>Tags</span>4</div>
+        <div><span>Categories</span>5</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/archives" title="文章归档">
+            <i class="mdui-list-item-icon nexmoefont icon-container"></i>
+            <div class="mdui-list-item-content">
+                文章归档
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/friends.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+  
+  <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+        <form id="search_form" action_e="https://www.baidu.com/s?wd=ritcheeqing" onsubmit="return search();">
+            <label><input id="search_value" name="q" type="search" placeholder="Search"></label>
+        </form>
+    </div>
+</div>
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">Social</h3>
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://space.bilibili.com/1668675" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/RitcheeQinG" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(25, 23, 23);background-color: rgba(25, 23, 23, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+  
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">Categories</h3>
+    <div class="nexmoe-widget">
+
+      <ul class="category-list">
+
+        
+
+
+        
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Tech/Android/">Android</a>
+          <span class="category-list-count">5</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Blog/">Blog</a>
+          <span class="category-list-count">4</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Issues/">Issues</a>
+          <span class="category-list-count">1</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Tech/NFV/">NFV</a>
+          <span class="category-list-count">2</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Tech/">Tech</a>
+          <span class="category-list-count">7</span>
+        </li>
+
+        
+      </ul>
+
+    </div>
+  </div>
+
+
+  
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">Tag Cloud</h3>
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/DPDK/" style="font-size: 13.33px;">DPDK</a> <a href="/tags/Mysis/" style="font-size: 16.67px;">Mysis</a> <a href="/tags/Theme/" style="font-size: 10px;">Theme</a>
+    </div>
+    
+  </div>
+  <style>
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+1) {
+    background-color: rgba(255,78,106,0.15);
+    color: rgba(255,78,106,0.8);
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+2) {
+    background-color: rgba(255,170,115,0.15);
+    color: #ffaa73;
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+3) {
+    background-color: rgba(254,212,102,0.15);
+    color: #fed466;
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+4) {
+    background-color: rgba(60,220,130,0.15);
+    color: #3cdc82;
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+5) {
+    background-color: rgba(100,220,240,0.15);
+    color: #64dcf0;
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+6) {
+    background-color: rgba(100,185,255,0.15);
+    color: #64b9ff;
+    }
+    #nexmoe-header .nexmoe-widget-wrap .tagcloud a:nth-child(7n+7) {
+    background-color: rgba(180,180,255,0.15);
+    color: #b4b4ff;
+    }
+
+    
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta {
+    margin: 25px 0px;
+    font-size: 0;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a {
+    border-radius: 20px;
+    padding: 10px 18px;
+    color: #fff;
+    font-size: 14px;
+    display: inline-block;
+    margin-bottom: 5px;
+    margin-right: 10px;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a .nexmoefont {
+    font-size: 14px;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:before,
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta i:before {
+    margin-right: 5px;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+1) {
+    background-color: rgba(255,78,106,0.15);
+    color: #ff4e6a;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+2) {
+    background-color: rgba(255,170,115,0.15);
+    color: #ffaa73;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+3) {
+    background-color: rgba(254,212,102,0.15);
+    color: #fed466;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+4) {
+    background-color: rgba(60,220,130,0.15);
+    color: #3cdc82;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+5) {
+    background-color: rgba(100,220,240,0.15);
+    color: #64dcf0;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+6) {
+    background-color: rgba(100,185,255,0.15);
+    color: #64b9ff;
+    }
+    #nexmoe-content .nexmoe-post .nexmoe-post-meta a:nth-child(7n+7) {
+    background-color: rgba(180,180,255,0.15);
+    color: #b4b4ff;
+    }
+</style>
+
+  
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">Archive</h3>
+    <div class="nexmoe-widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2020 RitcheeQinG
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://nexmoe.com/hexo-theme-nexmoe.html" target="_blank">Nexmoe</a>
+    </div>
+</div><!-- .nexmoe-drawer -->
+  </div>
+  <div id="nexmoe-content">
+    <div class="nexmoe-primary">
+        <div class="nexmoe-post">
+  
+      <div class="nexmoe-post-cover" style="padding-bottom: 56.25%;"> 
+          <img data-src="https://cdn.jsdelivr.net/gh/ritcheeqing/resources@latest/images/cover_yousa_qixi.PNG" data-sizes="auto" alt="Android点击空白区域收起键盘" class="lazyload">
+          <h1>Android点击空白区域收起键盘</h1>
+      </div>
+  
+  
+  <div class="nexmoe-post-meta" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2019年03月23日</a>
+    <a><i class="nexmoefont icon-areachart"></i>3.2k 字</a>
+    <a><i class="nexmoefont icon-time-circle-fill"></i>大概 14 分钟</a>
+</div>
+
+  <div class="nexmoe-post-right">
+    
+  </div>
+
+  <article>
+    <h1 id="本文内容"><a href="#本文内容" class="headerlink" title="本文内容"></a>本文内容</h1><ol>
+<li>可以添加蒙板来处理点击，以及如何把输入框顶到键盘上面</li>
+<li>手动关闭键盘的时机问题</li>
+<li>EditText第一次点击不响应的解决方法</li>
+<li>通过拦截Activity分发事件来判断此时点击的是EditText还是其他区域，并分别做处理的方法（主要是要说这个）</li>
+<li>监听键盘打开的方法</li>
+<li>一些其他的，关于EditText的焦点问题</li>
+</ol>
+<blockquote>
+<p>更新：提供了一个判断键盘是否正处于弹出状态的方法，更新在4下面了，这个新的方法不能实时监听，但是优点在于不像<code>addOnGlobalLayoutListener</code>那样调用次数过多浪费性能</p>
+</blockquote>
+<p><strong>老样子，本文代码都是随便写的，想拿去用随便搜搜或者点链接，哪都有</strong></p>
+<h1 id="参考链接以及问题描述"><a href="#参考链接以及问题描述" class="headerlink" title="参考链接以及问题描述"></a>参考链接以及问题描述</h1><blockquote>
+<p><a href="https://blog.csdn.net/yang_xing_/article/details/51769822" target="_blank" rel="noopener">Android点击屏幕空白处，隐藏键盘 - yang_xing</a><br>总之就是点击没有EditText的地方就把键盘隐藏起来，根据这个思路我们也可以多做些别的</p>
+</blockquote>
+<p><em>这里我搞了些多余的操作，因为我这边EditText的焦点不知道为什么怎么也取消不掉，关于这个问题文章末尾有提到</em><br><strong>顺带一提，关闭键盘的时机最好在Activity的<code>onDestroy</code>方法之前，在onDestroy时Activity已经不在窗口当中了，关闭键盘是要传入Context的，此时传入的和当前窗口中显示的自然不是同一个Activity了，会导致键盘无法关闭。当然，更省事的办法是在Manifest里面定义<code>stateHidden</code>就好了，这表示进入此Activity时键盘默认会关闭，只有主动点击EditText等方法才会将其打开。</strong></p>
+<h2 id="问题描述："><a href="#问题描述：" class="headerlink" title="问题描述："></a>问题描述：</h2><p>现在基本上绝大部分App都会有在调出键盘时点击屏幕任意区域将键盘取消掉的功能，方法各不相同吧，这个具体看设计。<br><em>下面我会写点别的，不感兴趣可以直接跳到下面的解决方案</em>，<del>都不感兴趣请直接点上面那个链接emm</del><br>分情况大概说一下<del>(下面的代码是我随便写的)</del>:</p>
+<ol>
+<li><strong>添加蒙版</strong>，键盘上面是输入框，输入文字之后出现一层蒙板，点发送或者点蒙板都会让键盘消失。<pre><code>View maskView = new View(getApplicationContext());
+     addContentView(maskView, new FrameLayout.LayoutParams(
+             ViewGroup.LayoutParams.MATCH_PARENT, 
+             ViewGroup.LayoutParams.MATCH_PARENT));
+     maskView.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+            ... // hide your keyboard or do something
+         }
+     });
+</code></pre><strong>想要输入框到键盘上面这事其实很简单，在输入框所在的布局文件的外层定义<code>android:fitsSystemWindows=&quot;true&quot;</code>就好了，这样键盘顶起来的时候会将最底下的输入框顶上去的。顺便一提，能滚动的布局请把设置成<code>AdjustResize</code>，不能滚动的请设置成<code>AdjustPan</code>，如果我记反了的话换了试试就好了emm</strong></li>
+</ol>
+<p>大概就是这种感觉<code>android:windowSoftInputMode=&quot;adjustResize|stateHidden&quot;</code></p>
+<ol>
+<li><strong>点了EditText弹出来一个Dialog用来输入内容</strong><br>由于EditText在没焦点时设置OnClick之后第一件事是给它个焦点，于是你的点击事件就这么被消耗了，要避免这事的话几种方法<ul>
+<li>鱼死网破法：给EditText设置 <code>onFocusableInTouchMode = false</code>，设置完这个EditText就变成能点不能输的控件了，其实如果是弹个dialog另行输入的话这也不失为一个办法，顺便在父布局那里搞上<code>descendantFocusability=&quot;blockDescendants&quot;</code>也可以</li>
+<li>曲线救国法：不设置<code>onClickListener</code>，然后设置<code>onTouchListener</code>或者<code>onFocusChangeListener</code>，思路大概就是因为第一次点击事件给focus消耗掉了，所以自然会出现focuschange，onTouch的话，DOWN被消耗掉了还有UP呢</li>
+<li>偷天换日法：上面蒙层view，给那个view设置点击事件（感觉这个办法好蠢……）</li>
+<li>画地为牢法：外面嵌套一层Layout，设置onIntercept</li>
+<li><em>曲线救国和画地为牢的示例代码我补在后面，感兴趣可以翻过去看看</em></li>
+</ul>
+</li>
+<li>屏幕里好大一张图，能点，下面是EditText，EditText旁边是用来发送的Button（类似我这的情况）<br><img data-sizes="auto" data-src="https://upload-images.jianshu.io/upload_images/15568908-69d9d1c96189a06f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="大概长这样" class="lazyload"></li>
+</ol>
+<p><strong>具体可以参考最上面的链接，我自己改了改用来处理我自己的情况</strong><br><strong>目的</strong>：在呼起键盘的时候，点击EditText和点击按钮有效，且如果没有输入的内容，键盘不会收下去。点击其他区域无效，键盘会收起来。     </p>
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p><strong>思路：拦截Activity的事件分发，如果此时屏幕焦点在EditText上面（如果光标在闪就说明焦点在它那儿了），</strong><br>具体来说的话，我希望上面的图不能点，但是EditText和右边的箭头都可以点，那么监听点击事件的位置，同时计算EditText的位置，如果点击事件位置在里面，那就调出键盘，再点什么也不做，点外面就把键盘收起来，其中上下的话，事件会被拦截，左右的话，事件可以继续处理。</p>
+<pre><code>public static boolean hideKeyboardByClick(MotionEvent event, View view, Activity activity) {
+        try {
+            if (view instanceof EditText) { // EditText获取焦点时
+                int[] location = { 0, 0 };
+                view.getLocationInWindow(location);
+                int top = location[1],
+                        bottom = top + view.getHeight();
+            // 判断焦点位置坐标是否在空间内，如果位置在控件外，则隐藏键盘
+                if (event.getRawY() &lt; top || event.getRawY() &gt; bottom) {
+                    // 在上下
+                    hideSoftInputBoard(activity, null);
+                    return true;
+                } // 在EditText的横向范围内，什么都不做
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+</code></pre><p>外面：<strong>(这里用了写在监听键盘那里的方法来做判断)</strong></p>
+<pre><code> @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        switch (ev.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                View view = getCurrentFocus();
+                if (isKeyboardShow &amp;&amp; Utils.hideKeyboardByClick(ev, view, MainActivity.this)) { // 调用方法判断是否需要隐藏键盘
+                    return true;
+                }
+                break;
+            default:
+                break;
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+</code></pre><p>如果你没什么好办法监测键盘的话，下面有个麻烦的方法，仅供参考：<br><em>再下面更新了一个靠谱一点的办法，下面这些可以跳过了</em><br><strong>Android里面静态变量尽量少用，毕竟用起来逻辑很容易乱，又占空间，不过当作常量的final static倒是无所谓</strong></p>
+<pre><code>// 用来记录键盘是否打开
+public static boolean isEditSelected = false;
+
+public static boolean hideKeyboard(MotionEvent event, View view,
+                                Activity activity) {
+    try {
+        if (view instanceof EditText) { // EditText获取焦点时
+            int[] location = { 0, 0 };
+            view.getLocationInWindow(location);
+            int left = location[0], top = location[1], right = left
+                    + view.getWidth(), bottom = top + view.getHeight();
+            // 判断焦点位置坐标是否在空间内，如果位置在控件外，则隐藏键盘
+            if (!isEditSelected) {
+                // 没被选中的状态下，点哪里都有效
+                if (event.getRawY() &gt; top &amp;&amp; event.getRawY() &lt; bottom
+                        &amp;&amp; event.getRawX() &gt; left &amp;&amp; event.getRawX() &lt; right) {
+                    // 在EditText内，设置为选中状态
+                    isEditSelected = true;
+                }
+            } else { // 如果在选中状态下，点击EditText的上下会隐藏键盘 + 失效，点击左右隐藏键盘但不失效，因为必定隐藏键盘
+                isEditSelected = false;
+                if (event.getRawY() &lt; top || event.getRawY() &gt; bottom) {
+                    // 在上下
+                    hideSoftInputBoard(activity, null);
+                    return true;
+                } else if (event.getRawX() &gt; left &amp;&amp; event.getRawX() &lt; right) {
+                    // 在EditText内，什么都不做
+                    isEditSelected = true;
+                    return false;
+                }
+                // 不在上下，不在内部，但在左右，正常生效，但隐藏键盘
+                hideSoftInputBoard(activity, null);
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+</code></pre><p>在这里说一下，如果键盘的弹出方式是将整个界面顶上去的话，最好用<code>getRawY()</code>，因为键盘收取弹出会带来Padding的变化……</p>
+<pre><code>@Override
+public boolean dispatchTouchEvent(MotionEvent ev) {
+    switch (ev.getAction()) {
+        case MotionEvent.ACTION_DOWN:
+            // 其实监听DOWN基本上就是监听所有触摸相关的事件了
+            View view = getCurrentFocus();
+            if (hideKeyboard(ev, view, MainActivity.this)) { // 调用方法判断是否需要隐藏键盘
+                // 这里返回true代表事件不再下发，意思是子控件不会响应点击事件
+                return true;
+            }
+            break;
+        default:
+            break;
+    }
+    return super.dispatchTouchEvent(ev);
+}
+</code></pre><p>除此之外，要考虑到EditText里面有内容时点击按钮是会收起键盘的，所以在按钮的点击事件里要把相应的值给调回去。<br>另外，要考虑到长按的事件，也要考虑到EditText在没有焦点时点上去的问题，总之上代码。</p>
+<pre><code>sendBtton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String message = editText.getText().toString();
+                if (Utils.isFastDoubleClick() || Utils.isEmpty(message)) {
+                    // 上面这两个方法是我自己的，用来判断输入是否为空和是否连点两次
+                    return;
+                }
+                Utils.isEditSelected = false;
+                Utils.hideSoftInputBoard(); // 收起键盘，和那个hideKeyBoard方法是两个不同的方法
+                ... // 点击事件
+            }
+        });
+editText.setOnTouchListener(new View.OnTouchListener() {
+            long preClickTime = 0;
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (MotionEvent.ACTION_DOWN == event.getAction()) {
+                    preClickTime = System.currentTimeMillis();
+                }
+                if (MotionEvent.ACTION_UP == event.getAction()) {
+                    if (System.currentTimeMillis() - preClickTime &gt; 500) {
+                        Utils.isEditSelected = false; // 记得改成自己的类
+                        // 长按不打开键盘
+                        return false;
+                    }
+                    Utils.isEditSelected = true; // 手从EditText上抬起，相当于点击
+                }
+                return false;
+            }
+        });
+</code></pre><p>其实要收起键盘，输入法里面还自带个收键盘按钮……所以说<br><strong>实际上这个方法有点蠢，要考虑的情况太多了，真要用还是和下面的监听键盘状态一起用会更好一些</strong><br>or <strong>如果谁有什么好办法监听键盘的话，欢迎提出～</strong></p>
+<blockquote>
+<p>更新：上面之前拿来判断键盘的是个boolean值吧，现在有个更好点的办法来判断键盘是不是在弹出状态了<br>思路来自github项目：<br><a href="https://github.com/yshrsmz/KeyboardVisibilityEvent" target="_blank" rel="noopener">KeyboardVisibilityEvent</a></p>
+</blockquote>
+<p>总体很简单，就是判断屏幕高度和当前显示的高度差了多少，我自己测了下，挺靠谱的</p>
+<pre><code>    public boolean isKeyboardVisible(Activity activity) {
+        double KEYBOARD_MIN_HEIGHT_RATIO = 0.3;
+        Rect r = new Rect();
+        View activityRoot = getActivityRoot(activity);
+        activityRoot.getWindowVisibleDisplayFrame(r);
+        int screenHeight = activityRoot.getRootView().getHeight();
+        int heightDiff = screenHeight - r.height();
+        return heightDiff &gt; screenHeight * KEYBOARD_MIN_HEIGHT_RATIO;
+    }
+
+    private View getActivityRoot(Activity activity) {
+        return ((ViewGroup) activity.findViewById(android.R.id.content)).getChildAt(0);
+    }
+</code></pre><h2 id="Android监听键盘状态"><a href="#Android监听键盘状态" class="headerlink" title="Android监听键盘状态"></a>Android监听键盘状态</h2><blockquote>
+<p><a href="https://juejin.im/post/5a31e42ff265da43163d14fe" target="_blank" rel="noopener">Android 监听键盘弹出收起 - 掘金</a><br>这个我懒得写太多，看链接就完事儿了，思路是监听View在窗口中的大小变化来判断键盘高度<br><a href="https://www.jianshu.com/p/c73832499aa7" target="_blank" rel="noopener">Android点击空白区域收起键盘</a><br>这个是我把下面的内容整合了一下，自己写了一段</p>
+</blockquote>
+<pre><code>        final View rootView = getActivity().getWindow().getDecorView();
+        globalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+            private int rootViewVisibleHeight = 0;
+            @Override
+            public void onGlobalLayout() {
+                Rect r = new Rect();
+                rootView.getWindowVisibleDisplayFrame(r);
+                int visibleHeight = r.height();
+                System.out.println(&quot;&quot;+visibleHeight);
+                if (rootViewVisibleHeight == 0) {
+                    rootViewVisibleHeight = visibleHeight;
+                    return;
+                }
+                //根视图显示高度没有变化，可以看作软键盘显示／隐藏状态没有改变
+                if (rootViewVisibleHeight == visibleHeight) {
+                    return;
+                }
+                //根视图显示高度变小超过200，可以看作软键盘显示了
+                if (rootViewVisibleHeight - visibleHeight &gt; 200) {
+                    rootViewVisibleHeight = visibleHeight;
+                    ... // do whatever you want
+                    return;
+                }
+                //根视图显示高度变大超过200，可以看作软键盘隐藏了
+                if (visibleHeight - rootViewVisibleHeight &gt; 200) {
+                    rootViewVisibleHeight = visibleHeight;
+                     ... // do whatever you want
+                }
+            }
+        };
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
+</code></pre><p>这是一个会连续调用的方法，调用的时机是窗口中任何view重绘的时候，所以判断条件要全面一些，根据自己需要把具体方法放到具体情况底下<br>如果要计算滚动高度的话，屏幕高度 - （键盘高度 - EditText底部高度）就好了，要考虑StatusBar高度可以考虑用反射获取：</p>
+<blockquote>
+<p><a href="https://blog.csdn.net/fengyenom1/article/details/79009283" target="_blank" rel="noopener">android开发：获取键盘的高度 - CSDN</a><br>随便找了一个，这个考虑到statusbar了</p>
+<pre><code>try {
+    Class&lt;?&gt; c = Class.forName(&quot;com.android.internal.R$dimen&quot;);
+    Object obj = c.newInstance();
+    Field field = c.getField(&quot;status_bar_height&quot;);
+    int x = Integer.parseInt(field.get(obj).toString());
+    statusBarHeight = context.getResources().getDimensionPixelSize(x);
+} catch (Exception e) {
+    e.printStackTrace();
+}
+</code></pre><p>顺便，<strong>Listener不用时记得回收：</strong><br><code>view.getViewTreeObserver().removeOnGlobalLayoutListener(globalLayoutListener);</code>这个最好注册给Activity，所以onPause和onDestroy时去掉就好了，onResume时可以考虑重新注册上。<br>如果只想使用一次，可以直接在方法里面remove掉，或者干脆点使用view的<code>post()</code>方法</p>
+<h2 id="在这里补一下曲线救国和画地为牢法的代码"><a href="#在这里补一下曲线救国和画地为牢法的代码" class="headerlink" title="在这里补一下曲线救国和画地为牢法的代码"></a>在这里补一下曲线救国和画地为牢法的代码</h2><p>（没人忘了这俩是指啥吧……）<br>其实就随便写两行谁都会的代码而已：</p>
+<ol>
+<li>曲线救国法</li>
+</ol>
+</blockquote>
+<pre><code>editText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (MotionEvent.ACTION_UP == event.getAction()) {
+                   ... // do somethings
+                }
+                return false;
+            }
+        });
+editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                   ... // do something
+                }
+            }
+        });
+</code></pre><ol>
+<li><p>画地为牢法</p>
+<pre><code>public class EditIntercpetLayout extends FrameLayout {
+
+     public EditIntercpetLayout(@NonNull Context context) {
+         super(context);
+     }
+
+     @Override
+     public boolean onInterceptTouchEvent(MotionEvent ev) {
+         ... // do something
+         // 这里的返回值true代表事件在这里消耗，即子控件不会再获取事件，如果不想这样，不修改返回值就好
+         return super.onInterceptTouchEvent(ev);
+     }
+ }
+</code></pre></li>
+</ol>
+<h1 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h1><h2 id="关于EditText焦点的问题"><a href="#关于EditText焦点的问题" class="headerlink" title="关于EditText焦点的问题"></a>关于EditText焦点的问题</h2><blockquote>
+<p><a href="https://stackoverflow.com/questions/3890033/how-to-remove-focus-from-single-edittext" target="_blank" rel="noopener">StackOverFlow - [How to remove focus from single editText]</a></p>
+</blockquote>
+<p>总结一下，一般而言素质三连就好了<br><code>android:focusable=&quot;true&quot;</code> ，<br> <code>android:focusableInTouchMode=&quot;true&quot;</code> ，<br> <code>view.clearFocus()</code><br>需要注意的是那两条属性要配置在父布局里，否则的话focus清掉还会重新寻找焦点，如果没有父布局有这些属性，那focus就会回到EditText那里<br><strong>如果在父布局中设置这些不生效的话：</strong><br>这是我遇到的问题，最后的解决办法：<br>在EditText旁边创建一个不可见也基本不占位置的view，素质三连，然后在布局加载完成后<code>requestFocus</code>就好了</p>
+
+  </article>
+
+  <div class="nexmoe-post-meta">
+    
+        <a class="nexmoefont icon-appstore-fill -link" href="/categories/Tech/">Tech</a><a class="nexmoefont icon-appstore-fill -link" href="/categories/Tech/Android/">Android</a>
+    
+    
+        <a class="nexmoefont icon-tag-fill -link" href="/tags/Android/" rel="tag">Android</a>
+    
+</div>
+
+  <div class="nexmoe-post-footer">
+    
+      
+  <div class="nexmoe-post-copyright">
+    <strong>Author：</strong>RitcheeQinG<br>
+    <strong>Link：</strong><a href="https://ritcheeqing.github.io/2019/03/23/android-keyboard-enclose/" title="https:&#x2F;&#x2F;ritcheeqing.github.io&#x2F;2019&#x2F;03&#x2F;23&#x2F;android-keyboard-enclose&#x2F;" target="_blank" rel="noopener">https:&#x2F;&#x2F;ritcheeqing.github.io&#x2F;2019&#x2F;03&#x2F;23&#x2F;android-keyboard-enclose&#x2F;</a><br>
+    
+      <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+    
+  </div>
+
+
+    
+    <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.0/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.0/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'nexmoe.github.io',
+        owner: 'nexmoe',
+        admin: 'nexmoe'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+  </div>
+</div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,gh/highlightjs/cdn-release@9.15.8/build/highlight.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js,gh/nexmoe/nexmoe.github.io@latest/js/app.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<!--<script src="/js/app.js?v=1584249755453"></script>-->
+
+
+    <script src="https://cdn.jsdelivr.net/gh/xtaodada/xtaodada.github.io@0.0.2/copy.js"></script>
+
+
+ 
+<script> 
+!function(e,t,a){function n(){c(".heart{width: 10px;height: 10px;position: fixed;background: #f00;transform: rotate(45deg);-webkit-transform: rotate(45deg);-moz-transform: rotate(45deg);}.heart:after,.heart:before{content: '';width: inherit;height: inherit;background: inherit;border-radius: 50%;-webkit-border-radius: 50%;-moz-border-radius: 50%;position: fixed;}.heart:after{top: -5px;}.heart:before{left: -5px;}"),o(),r()}function r(){for(var e=0;e<d.length;e++)d[e].alpha<=0?(t.body.removeChild(d[e].el),d.splice(e,1)):(d[e].y--,d[e].scale+=.004,d[e].alpha-=.013,d[e].el.style.cssText="left:"+d[e].x+"px;top:"+d[e].y+"px;opacity:"+d[e].alpha+";transform:scale("+d[e].scale+","+d[e].scale+") rotate(45deg);background:"+d[e].color+";z-index:99999");requestAnimationFrame(r)}function o(){var t="function"==typeof e.onclick&&e.onclick;e.onclick=function(e){t&&t(),i(e)}}function i(e){var a=t.createElement("div");a.className="heart",d.push({el:a,x:e.clientX-5,y:e.clientY-5,scale:1,alpha:1,color:s()}),t.body.appendChild(a)}function c(e){var a=t.createElement("style");a.type="text/css";try{a.appendChild(t.createTextNode(e))}catch(t){a.styleSheet.cssText=e}t.getElementsByTagName("head")[0].appendChild(a)}function s(){return"rgb("+~~(255*Math.random())+","+~~(255*Math.random())+","+~~(255*Math.random())+")"}var d=[];e.requestAnimationFrame=function(){return e.requestAnimationFrame||e.webkitRequestAnimationFrame||e.mozRequestAnimationFrame||e.oRequestAnimationFrame||e.msRequestAnimationFrame||function(e){setTimeout(e,1e3/60)}}(),n()}(window,document);
+</script>
+
+  
+
+
+
+
+
+</body>
+
+</html>
